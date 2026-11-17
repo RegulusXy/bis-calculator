@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIS 智能配装计算器</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #1e1e24; 
+            color: #e0e0e0; 
+            padding: 20px; 
+            margin: 0;
+            display: flex; 
+            justify-content: center; 
+        }
+        
+        /* 左右并排布局 */
+        .container { 
+            max-width: 1400px; 
+            width: 100%; 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .panel { 
+            background: rgba(43, 43, 54, 0.92); 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+            min-width: 0; 
+            backdrop-filter: blur(2px);
+        }
+        /* 左侧给更多空间适应长下拉框 */
+        .panel:nth-child(1) { flex: 1.2 1 550px; }
+        .panel:nth-child(2) { flex: 1 1 450px; }
+        
+        h2 { 
+            margin-top: 0; 
+            font-size: 18px; 
+            border-bottom: 1px solid #444; 
+            padding-bottom: 10px; 
+            color: #fff; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 提示信息 */
+        .info-tip {
+            font-size: 12px;
+            color: #ffcc80;
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 3px solid #ff9800;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+
+        /* --- 右侧面板内的目标看板 --- */
+        .goal-board {
+            background: #1e1e24;
+            border: 1px solid #3a3a45;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        .goal-title {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .goal-group { margin-bottom: 12px; }
+        .goal-group:last-child { margin-bottom: 0; }
+        .goal-group-label { 
+            font-size: 13px; 
+            color: #fff; 
+            margin-bottom: 8px; 
+            border-left: 3px solid #777;
+            padding-left: 6px;
+        }
+        .goal-group.priority .goal-group-label { border-left-color: #5c8ab8; color: #8ab4f8; }
+
+        .goal-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .goal-tag {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #333;
+            border: 1px solid #555;
+            white-space: nowrap; 
+        }
+        .goal-tag.req-3 { color: #8ab4f8; border-color: #4a7ba6; background: rgba(74, 123, 166, 0.1); }
+        .goal-tag.req-1 { color: #fca86b; border-color: #a6643e; background: rgba(166, 100, 62, 0.1); }
+        .goal-tag.low-priority {
+            color: #888;
+            border-color: #444;
+            background: rgba(255, 255, 255, 0.02);
+            text-decoration: line-through;
+            position: relative;
+        }
+        .goal-tag.low-priority::after {
+            content: "最低";
+            position: absolute;
+            top: -8px;
+            right: -5px;
+            background: #555;
+            color: #fff;
+            font-size: 9px;
+            padding: 0 4px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .slot-group {
+            background: #22222a;
+            border: 1px solid #3a3a45;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 8px;
+        }
+
+        .slot-name { font-weight: bold; color: #ffd54f; font-size: 16px; }
+
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .add-btn:hover { background: #45a049; }
+
+        .equip-card {
+            position: relative;
+            background: #2b2b36;
+            border: 2px solid transparent; 
+            border-radius: 4px;
+            padding: 8px 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        /* --- 锁定必选样式 --- */
+        .equip-card.locked {
+            border: 2px solid #2196F3;
+            background-color: rgba(33, 150, 243, 0.15);
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+            opacity: 1 !important; 
+        }
+        .equip-card.locked .equip-index { color: #2196F3; }
+
+        /* --- 选中高亮样式 --- */
+        .equip-card.selected {
+            border: 2px solid #4CAF50;
+            background-color: rgba(76, 175, 80, 0.15);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+            opacity: 1 !important; 
+        }
+        .equip-card.locked.selected {
+            border: 2px solid #00E676;
+            background-color: rgba(0, 230, 118, 0.15);
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+        }
+
+        /* --- 重复装备标记 --- */
+        .equip-card.duplicate { border: 2px dashed #ff9800; }
+        
+        /* --- 可弃用标记 --- */
+        .equip-card.can-trash {
+            opacity: 0.5;
+            background: #1a1a1f;
+        }
+        .equip-card.can-trash:hover {
+            opacity: 0.8;
+            border: 2px dashed #666;
+        }
+
+        /* 角标通用样式 */
+        .badge {
+            position: absolute;
+            top: -8px;
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .duplicate-badge { right: 10px; background: #ff9800; }
+        .trash-badge { right: 50px; background: #666; }
+
+        .equip-index { 
+            font-size: 12px; 
+            color: #888; 
+            width: 32px; 
+            text-align: center; 
+            flex-shrink: 0; 
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+        .equip-index:hover { color: #fff; }
+        
+        .equip-card.duplicate .equip-index { color: #ff9800; }
+        .equip-card.can-trash .equip-index { color: #666; }
+
+        /* 下拉框基础样式 */
+        select { 
+            flex: 1 1 0%; 
+            min-width: 0; 
+            padding: 6px 4px; 
+            background: #1e1e24; 
+            color: #fff; 
+            border: 1px solid #555; 
+            border-radius: 4px; 
+            outline: none; 
+            cursor: pointer; 
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        select:focus { border-color: #888; }
+
+        .sort-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .sort-btn {
+            background: #444;
+            color: #ccc;
+            border: none;
+            border-radius: 3px;
+            width: 20px;
+            height: 14px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .sort-btn:hover:not(:disabled) { background: #666; color: #fff; }
+        .sort-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .remove-btn {
+            background: #e53935;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 30px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .remove-btn:hover { background: #c62828; }
+
+        .calc-btn {
+            width: 100%;
+            padding: 15px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
+        }
+        .calc-btn:hover { background: #1565c0; }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            font-size: 13px; 
+        }
+        
+        th, td { 
+            padding: 8px 4px; 
+            text-align: center; 
+            border-bottom: 1px solid #444; 
+        }
+        th:first-child, td:first-child { text-align: left; padding-left: 10px; }
+        th { color: #aaa; font-weight: normal; }
+        
+        .missing-pos { color: #ff5252; font-weight: bold; } 
+        .missing-zero { color: #4CAF50; font-weight: bold; } 
+        .missing-over { color: #42a5f5; font-weight: bold; } 
+        
+        .total-row { font-weight: bold; background-color: #333; }
+
+        .result-box {
+            background: #1e1e24;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .result-box.fail { border-left-color: #ff5252; }
+        .result-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #fff; }
+        .result-detail { font-size: 14px; color: #ccc; line-height: 1.8; }
+        .result-detail span.slot-title { color: #ffd54f; font-weight: bold; margin-right: 5px; }
+        .result-detail span.equip-info { color: #81c784; }
+        .result-detail span.skill-tag { 
+            background: #333; 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            margin: 2px 4px 2px 0; 
+            font-size: 12px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        
+        .suggestion-box {
+            background: #2a2215;
+            border: 1px dashed #ff9800;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .suggestion-title {
+            color: #ff9800;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .suggestion-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #ff9800;
+        }
+        .suggestion-item:last-child { margin-bottom: 0; }
+        .suggestion-item-title { color: #ffb74d; font-weight: bold; margin-bottom: 5px; }
+        .suggestion-text {
+            color: #ffcc80;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .suggestion-text strong { color: #fff; }
+        .tag-add { 
+            color: #4CAF50; 
+            font-weight: bold; 
+            background: rgba(76, 175, 80, 0.2); 
+            padding: 2px 6px; 
+            border-radius: 4px;
+            display: inline-block;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 左侧：装备库录入 -->
+    <div class="panel">
+        <h2>
+            <span>📦 装备库录入</span>
+            <button onclick="resetData()" style="background:#444;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">清空全部</button>
+        </h2>
+        
+        <div class="info-tip">
+            💡 <strong>操作提示：</strong><br>
+            1. 点击 <strong>#序号</strong> 设为 <strong>🔒 必选锁定</strong>（亮蓝框）。<br>
+            2. 使用右侧的 <strong>↑ / ↓</strong> 按钮调整装备顺序。<br>
+            3. 灰色“可弃用”装备悬停看原因，点击 ✖ 安全清理。
+        </div>
+
+        <div id="inventoryContainer"></div>
+    </div>
+
+    <!-- 右侧：计算结果 -->
+    <div class="panel">
+        <h2>🧮 计算结果</h2>
+        
+        <!-- 目标看板 -->
+        <div class="goal-board">
+            <div class="goal-title">🎯 计算目标：主词条优先 > 职业专属 > 爆伤</div>
+            <div class="goal-group priority">
+                <div class="goal-group-label">🌟 高优先级主词条 (各需 3 个)</div>
+                <div class="goal-tags" id="goalReq3"></div>
+            </div>
+            <div class="goal-group">
+                <div class="goal-group-label">专属词条 (Critical Damage 优先级最低)</div>
+                <div class="goal-tags" id="goalReq1"></div>
+            </div>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">🔍 计算最佳组合</button>
+        
+        <div id="resultArea" style="display:none;">
+            <div id="comboShow" class="result-box"></div>
+            <div id="suggestionArea"></div>
+            
+            <h3 style="margin-top: 20px; font-size: 16px; color: #fff; border-left: 4px solid #ffd54f; padding-left: 10px;">📊 该组合的词条统计</h3>
+            <table id="statsTable">
+                <thead>
+                    <tr>
+                        <th>词条名称</th>
+                        <th>需求</th>
+                        <th>该组合拥有</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody id="statsBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="emptyTip" style="color: #888; text-align: center; margin-top: 50px;">
+            请在左侧添加装备（每个部位至少一件），然后点击上方按钮计算。
+        </div>
+    </div>
+</div>
+
+<script>
+    function generateWatermark() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 400;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(-25 * Math.PI / 180); 
+        ctx.font = '16px "Microsoft YaHei", sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.06)'; 
+        ctx.textAlign = 'center';
+        ctx.fillText('Reditus家族制作', 0, -12);
+        ctx.fillText('QQ群1030840800', 0, 12);
+        const dataURL = canvas.toDataURL('image/png');
+        document.body.style.backgroundImage = `url(${dataURL})`;
+        document.body.style.backgroundRepeat = 'repeat';
+    }
+
+    const slotNames = ["帽子", "上衣", "下装", "披风", "手套", "鞋子"];
+    
+    const targets = {
+        "Dimensional Leap": 3, 
+        "White Hole": 3, 
+        "Registry": 3, 
+        "Attack Power & Magic ATT": 3,
+        "Magician Attack": 1, 
+        "Pirate Attack": 1, 
+        "Thief Attack": 1, 
+        "Warrior Attack": 1, 
+        "Bowman Attack": 1, 
+        "Critical Damage": 1
+    };
+    
+    const skillList = Object.keys(targets);
+    
+    let inventoryData = JSON.parse(localStorage.getItem('bis_inventory_v1')) || {};
+    let lockedEquips = JSON.parse(localStorage.getItem('bis_locked_v1')) || {}; 
+    let trashableEquips = new Set(); 
+
+    function init() {
+        generateWatermark();
+        renderGoalBoard(); 
+        slotNames.forEach(slot => {
+            if (!inventoryData[slot] || inventoryData[slot].length === 0) {
+                inventoryData[slot] = [["", "", ""]];
+            }
+        });
+        renderInventory();
+    }
+
+    function renderGoalBoard() {
+        const req3Container = document.getElementById('goalReq3');
+        const req1Container = document.getElementById('goalReq1');
+        
+        skillList.filter(s => targets[s] === 3).forEach(skill => {
+            const tag = document.createElement('span');
+            tag.className = 'goal-tag req-3';
+            tag.textContent = `${skill} x3`;
+            req3Container.appendChild(tag);
+        });
+
+        const req1Skills = skillList.filter(s => targets[s] === 1);
+        req1Skills.sort((a, b) => {
+            if (a === 'Critical Damage') return 1;
+            if (b === 'Critical Damage') return -1;
+            return 0;
+        });
+
+        req1Skills.forEach(skill => {
+            const tag = document.createElement('span');
+            if (skill === 'Critical Damage') {
+                tag.className = 'goal-tag req-1 low-priority'; 
+            } else {
+                tag.className = 'goal-tag req-1';
+            }
+            tag.textContent = `${skill} x1`;
+            req1Container.appendChild(tag);
+        });
+    }
+
+    function getTrashReason(slot, index) {
+        const equip = inventoryData[slot][index];
+        const validSkills = equip.filter(s => s && s !== '');
+        
+        if (validSkills.length === 0) return "这件装备没有录入任何有效词条，可以安全删除。";
+        
+        for (let i = 0; i < inventoryData[slot].length; i++) {
+            if (i === index) continue;
+            const other = inventoryData[slot][i];
+            const otherValid = other.filter(s => s && s !== '');
+            if (validSkills.every(s => otherValid.includes(s))) {
+                return `该部位的第 ${i + 1} 件装备完全包含了这件的词条，因此可以被替代。`;
+            }
+        }
+
+        const fingerprint = validSkills.sort().join('|');
+        const dupCount = inventoryData[slot].filter(eq => eq.filter(s=>s).sort().join('|') === fingerprint).length;
+        if (dupCount > 1) return "该部位存在词条完全相同的装备，保留其中一件即可，这件是多余的。";
+
+        return "在当前能达到最高评分的所有组合中，这件装备均未被选中，说明它对凑齐目标词条没有帮助。";
+    }
+
+    function renderInventory() {
+        const container = document.getElementById('inventoryContainer');
+        container.innerHTML = '';
+
+        slotNames.forEach(slot => {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'slot-group';
+            
+            const header = document.createElement('div');
+            header.className = 'slot-header';
+            header.innerHTML = `
+                <span class="slot-name">${slot}</span>
+                <button class="add-btn" onclick="addEquip('${slot}')">+ 添加装备</button>
+            `;
+            groupDiv.appendChild(header);
+
+            const fingerprintCounts = {};
+            inventoryData[slot].forEach(equip => {
+                const validSkills = equip.filter(s => s && s !== '').sort();
+                if (validSkills.length === 0) return; 
+                const fingerprint = validSkills.join('|');
+                fingerprintCounts[fingerprint] = (fingerprintCounts[fingerprint] || 0) + 1;
+            });
+
+            inventoryData[slot].forEach((equip, index) => {
+                const card = document.createElement('div');
+                card.className = 'equip-card';
+                card.id = `equip-${slot}-${index}`; 
+                
+                const validSkills = equip.filter(s => s && s !== '').sort();
+                const fingerprint = validSkills.join('|');
+                const isDuplicate = validSkills.length > 0 && fingerprintCounts[fingerprint] > 1;
+                const isTrash = trashableEquips.has(`${slot}-${index + 1}`);
+                const isLocked = lockedEquips[slot] === index;
+                
+                if (isDuplicate) card.classList.add('duplicate');
+                if (isTrash) card.classList.add('can-trash');
+                if (isLocked) card.classList.add('locked');
+
+                if (isTrash && !isLocked) {
+                    card.title = getTrashReason(slot, index);
+                }
+
+                let indexHTML = `<div class="equip-index" onclick="toggleLock('${slot}', ${index})" title="点击${isLocked ? '取消必选' : '设为必选'}">
+                    ${isLocked ? '🔒' : '#'}${index + 1}
+                </div>`;
+
+                let selectsHTML = indexHTML;
+                for (let i = 0; i < 3; i++) {
+                    let opts = '<option value="" style="background-color: #1e1e24; color: #888;">- 无 -</option>';
+                    skillList.forEach(skill => {
+                        // 柔和版配色：下拉选项
+                        let optStyle = '';
+                        if (targets[skill] === 3) {
+                            optStyle = 'background-color: #1a2634; color: #8ab4f8;'; 
+                        } else if (skill === 'Critical Damage') {
+                            optStyle = 'background-color: #222222; color: #888888;'; 
+                        } else {
+                            optStyle = 'background-color: #332014; color: #fca86b;'; 
+                        }
+                        opts += `<option value="${skill}" style="${optStyle}" ${equip[i] === skill ? 'selected' : ''}>${skill}</option>`;
+                    });
+                    
+                    // 柔和版配色：选中框本体
+                    const currentVal = equip[i] || '';
+                    let selectStyle = '';
+                    if (currentVal) {
+                        if (targets[currentVal] === 3) {
+                            selectStyle = 'border-color: #4a7ba6; color: #8ab4f8; background-color: #1a2634;';
+                        } else if (currentVal === 'Critical Damage') {
+                            selectStyle = 'border-color: #444; color: #888; background-color: #222;';
+                        } else {
+                            selectStyle = 'border-color: #a6643e; color: #fca86b; background-color: #332014;';
+                        }
+                    }
+                    
+                    selectsHTML += `<select onchange="updateEquip('${slot}', ${index}, ${i}, this.value)" style="${selectStyle}">${opts}</select>`;
+                }
+
+                const isFirst = index === 0;
+                const isLast = index === inventoryData[slot].length - 1;
+                selectsHTML += `
+                    <div class="sort-controls">
+                        <button class="sort-btn" onclick="moveEquip('${slot}', ${index}, -1)" ${isFirst ? 'disabled' : ''} title="上移">↑</button>
+                        <button class="sort-btn" onclick="moveEquip('${slot}', ${index}, 1)" ${isLast ? 'disabled' : ''} title="下移">↓</button>
+                    </div>
+                `;
+
+                selectsHTML += `<button class="remove-btn" onclick="removeEquip('${slot}', ${index})">✖</button>`;
+                
+                if (isDuplicate) {
+                    selectsHTML += `<div class="badge duplicate-badge">重复</div>`;
+                }
+                if (isTrash && !isLocked) {
+                    selectsHTML += `<div class="badge trash-badge">可弃用</div>`;
+                }
+
+                card.innerHTML = selectsHTML;
+                groupDiv.appendChild(card);
+            });
+
+            container.appendChild(groupDiv);
+        });
+        
+        saveData();
+    }
+
+    function moveEquip(slot, index, direction) {
+        const arr = inventoryData[slot];
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= arr.length) return;
+
+        [arr[index], arr[targetIndex]] = [arr[targetIndex], arr[index]];
+
+        if (lockedEquips[slot] !== undefined) {
+            if (lockedEquips[slot] === index) {
+                lockedEquips[slot] = targetIndex;
+            } else if (lockedEquips[slot] === targetIndex) {
+                lockedEquips[slot] = index;
+            }
+        }
+
+        if (trashableEquips.size > 0) {
+            calculate(true); 
+        } else {
+            renderInventory();
+        }
+    }
+
+    function toggleLock(slot, index) {
+        if (lockedEquips[slot] === index) {
+            delete lockedEquips[slot]; 
+        } else {
+            lockedEquips[slot] = index; 
+        }
+        
+        trashableEquips.clear();
+        clearHighlights(); 
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('emptyTip').style.display = 'block';
+        
+        saveData();
+        renderInventory();
+    }
+
+    function clearHighlights() {
+        document.querySelectorAll('.equip-card').forEach(el => {
+            el.classList.remove('selected');
+        });
+    }
+
+    function addEquip(slot) {
+        if (inventoryData[slot].length >= 10) {
+            alert("一个部位最多添加10件装备，太多了计算机会累的~");
+            return;
+        }
+        inventoryData[slot].push(["", "", ""]);
+        trashableEquips.clear(); 
+        renderInventory();
+        clearHighlights(); 
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('emptyTip').style.display = 'block';
+    }
+
+    function removeEquip(slot, index) {
+        const isTrash = trashableEquips.has(`${slot}-${index + 1}`);
+        
+        if (lockedEquips[slot] !== undefined) {
+            if (lockedEquips[slot] === index) {
+                delete lockedEquips[slot]; 
+            } else if (lockedEquips[slot] > index) {
+                lockedEquips[slot]--; 
+            }
+        }
+
+        if (inventoryData[slot].length <= 1) {
+            inventoryData[slot][0] = ["", "", ""];
+            delete lockedEquips[slot];
+        } else {
+            inventoryData[slot].splice(index, 1);
+        }
+
+        if (isTrash) {
+            calculate(true); 
+        } else {
+            trashableEquips.clear();
+            renderInventory();
+            clearHighlights(); 
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('emptyTip').style.display = 'block';
+        }
+    }
+
+    function updateEquip(slot, equipIndex, posIndex, value) {
+        inventoryData[slot][equipIndex][posIndex] = value;
+        trashableEquips.clear(); 
+        saveData();
+        renderInventory(); 
+        clearHighlights(); 
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('emptyTip').style.display = 'block';
+    }
+
+    function saveData() {
+        localStorage.setItem('bis_inventory_v1', JSON.stringify(inventoryData));
+        localStorage.setItem('bis_locked_v1', JSON.stringify(lockedEquips)); 
+    }
+
+    function resetData() {
+        if (confirm("确定要清空所有录入的装备吗？")) {
+            localStorage.removeItem('bis_inventory_v1');
+            localStorage.removeItem('bis_locked_v1');
+            location.reload();
+        }
+    }
+
+    function calculate(isSilent = false) {
+        for (let slot of slotNames) {
+            if (!inventoryData[slot] || inventoryData[slot].length === 0) {
+                alert(`【${slot}】部位没有任何装备！`);
+                return;
+            }
+        }
+
+        if (!isSilent) {
+            clearHighlights(); 
+            trashableEquips.clear(); 
+            document.getElementById('emptyTip').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+            document.getElementById('comboShow').innerHTML = '<div style="color:#fff;">正在疯狂计算中...</div>';
+            document.getElementById('suggestionArea').innerHTML = '';
+            setTimeout(runCoreCalc, 50);
+        } else {
+            runCoreCalc();
+        }
+    }
+
+    function runCoreCalc() {
+        let bestCombo = null;
+        let minWeightedMissing = Infinity;
+        let minWeightedExcess = Infinity;
+        let optimalEquipsSet = new Set(); 
+
+        function dfs(slotIndex, currentCombo) {
+            if (slotIndex === slotNames.length) {
+                let counts = {};
+                skillList.forEach(s => counts[s] = 0);
+                
+                currentCombo.forEach(equip => {
+                    equip.forEach(skill => {
+                        if (skill && counts[skill] !== undefined) counts[skill]++;
+                    });
+                });
+
+                let weightedMissing = 0;
+                let weightedExcess = 0;
+                let totalMissingCount = 0; 
+
+                skillList.forEach(skill => {
+                    const target = targets[skill];
+                    const current = counts[skill];
+                    
+                    let weight = 1; 
+                    if (target === 3) weight = 100; 
+                    else if (skill !== 'Critical Damage') weight = 10;  
+
+                    if (current < target) {
+                        weightedMissing += (target - current) * weight;
+                        totalMissingCount += (target - current);
+                    } else if (current > target) {
+                        weightedExcess += (current - target) * weight;
+                    }
+                });
+
+                if (weightedMissing < minWeightedMissing || 
+                   (weightedMissing === minWeightedMissing && weightedExcess < minWeightedExcess)) {
+                    
+                    minWeightedMissing = weightedMissing;
+                    minWeightedExcess = weightedExcess;
+                    
+                    bestCombo = {
+                        combo: currentCombo.map((eq, i) => ({ skills: eq, index: i })),
+                        counts: {...counts},
+                        totalMissing: totalMissingCount
+                    };
+                    
+                    optimalEquipsSet.clear();
+                    currentCombo.forEach(eq => {
+                        optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`);
+                    });
+                    
+                } else if (weightedMissing === minWeightedMissing && weightedExcess === minWeightedExcess) {
+                    currentCombo.forEach(eq => {
+                        optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`);
+                    });
+                }
+                return;
+            }
+
+            let slot = slotNames[slotIndex];
+            let lockedIndex = lockedEquips[slot];
+
+            inventoryData[slot].forEach((equip, idx) => {
+                if (lockedIndex !== undefined && lockedIndex !== idx) {
+                    return; 
+                }
+
+                let equipCopy = [...equip];
+                equipCopy._originIndex = idx + 1;
+                equipCopy._slotName = slot; 
+                currentCombo.push(equipCopy);
+                dfs(slotIndex + 1, currentCombo);
+                currentCombo.pop();
+            });
+        }
+
+        dfs(0, []);
+
+        trashableEquips.clear();
+        slotNames.forEach(slot => {
+            if (inventoryData[slot].length > 1 && lockedEquips[slot] === undefined) {
+                inventoryData[slot].forEach((equip, idx) => {
+                    const key = `${slot}-${idx + 1}`;
+                    if (!optimalEquipsSet.has(key)) {
+                        trashableEquips.add(key);
+                    }
+                });
+            }
+        });
+
+        renderInventory(); 
+        displayResult(bestCombo);
+    }
+
+    function displayResult(result) {
+        const comboBox = document.getElementById('comboShow');
+        const suggestionArea = document.getElementById('suggestionArea');
+        
+        let titleText = '';
+        let boxClass = 'result-box ';
+        
+        if (result.totalMissing === 0) {
+            titleText = `🎉 完美毕业！找到了完美满足目标的组合！`;
+            boxClass += '';
+        } else {
+            titleText = `⚠️ 现有装备无法完美毕业，这是最接近的组合 (还差 ${result.totalMissing} 个词条)`;
+            boxClass += 'fail';
+        }
+
+        let detailHTML = `<div class="result-title">${titleText}</div><div class="result-detail">`;
+        
+        slotNames.forEach((slot, i) => {
+            const equipInfo = result.combo[i];
+            const originIndex = equipInfo.skills._originIndex; 
+            const domIndex = originIndex - 1; 
+            
+            const cardEl = document.getElementById(`equip-${slot}-${domIndex}`);
+            if (cardEl) cardEl.classList.add('selected');
+
+            const validSkills = equipInfo.skills.filter(s => s && s !== '');
+            const skillsHTML = validSkills.length > 0 
+                ? validSkills.map(s => `<span class="skill-tag">${s}</span>`).join('') 
+                : '<span class="skill-tag" style="color:#888">无有效词条</span>';
+            
+            detailHTML += `<div style="margin-bottom: 6px;">
+                <span class="slot-title">${slot}</span> 
+                <span class="equip-info">选择第 ${originIndex} 件</span>：
+                ${skillsHTML}
+            </div>`;
+        });
+        detailHTML += `</div>`;
+        
+        comboBox.className = boxClass;
+        comboBox.innerHTML = detailHTML;
+
+        if (result.totalMissing > 0) {
+            let suggestions = generateReplacements(result);
+            if (suggestions.length > 0) {
+                let suggestionsHTML = `
+                    <div class="suggestion-box">
+                        <div class="suggestion-title">💡 完美毕业路线推荐 (缺 ${result.totalMissing} 个词条)</div>
+                `;
+                
+                suggestions.forEach((sug, idx) => {
+                    suggestionsHTML += `
+                        <div class="suggestion-item">
+                            <div class="suggestion-item-title">路线 ${idx + 1}</div>
+                            <div class="suggestion-text">
+                                替换 <strong>【${sug.slotName}】的第 ${sug.originIndex} 件</strong> 
+                                (原词条: ${sug.oldSkillsText})<br>
+                                你需要刷出一件带有 <span class="tag-add">[${sug.neededSkills.join('] [')}]</span> 的新【${sug.slotName}】。
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                suggestionsHTML += `</div>`;
+                suggestionArea.innerHTML = suggestionsHTML;
+            } else {
+                suggestionArea.innerHTML = '';
+            }
+        } else {
+            suggestionArea.innerHTML = '';
+        }
+
+        const tbody = document.getElementById('statsBody');
+        tbody.innerHTML = '';
+        
+        skillList.forEach(skill => {
+            const target = targets[skill];
+            const current = result.counts[skill];
+            
+            let statusText = '';
+            let statusClass = '';
+
+            if (current === target) {
+                statusText = '完美';
+                statusClass = 'missing-zero';
+            } else if (current < target) {
+                statusText = `缺 ${target - current}`;
+                statusClass = 'missing-pos';
+            } else {
+                statusText = `超 ${current - target}`;
+                statusClass = 'missing-over';
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${skill}</td>
+                <td>${target}</td>
+                <td>${current}</td>
+                <td class="${statusClass}">${statusText}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function generateReplacements(result) {
+        let missingMain = [];
+        let missingSub = [];
+        let missingCrit = [];
+
+        skillList.forEach(skill => {
+            let diff = targets[skill] - result.counts[skill];
+            if (diff > 0) {
+                for(let i=0; i<diff; i++) {
+                    if (targets[skill] === 3) missingMain.push(skill);
+                    else if (skill === 'Critical Damage') missingCrit.push(skill);
+                    else missingSub.push(skill);
+                }
+            }
+        });
+
+        let missingList = [...missingMain, ...missingSub, ...missingCrit];
+
+        if (missingList.length > 3) {
+             return [{ 
+                 slotName: "提示", 
+                 originIndex: "-", 
+                 oldSkillsText: "-", 
+                 neededSkills: [`当前缺口达到 ${missingList.length} 个，单件替换无法毕业，请继续刷装备`] 
+             }];
+        }
+
+        let currentEquips = result.combo.map((eq, slotIdx) => ({
+            slotName: slotNames[slotIdx],
+            skills: [...eq.skills],
+            originIndex: eq.skills._originIndex
+        }));
+
+        let candidates = [];
+        
+        currentEquips.forEach((equip, index) => {
+            let lostSkills = [];
+            let tempCounts = {...result.counts}; 
+            
+            equip.skills.forEach(s => {
+                if (s && tempCounts[s] !== undefined && tempCounts[s] > 0) {
+                    tempCounts[s]--;
+                }
+            });
+            
+            equip.skills.forEach(s => {
+                if (!s) return;
+                if (tempCounts[s] < targets[s]) {
+                    lostSkills.push(s);
+                }
+            });
+
+            let neededSkillsSet = new Set(missingList);
+            lostSkills.forEach(s => neededSkillsSet.add(s));
+            
+            let neededSkills = Array.from(neededSkillsSet);
+            
+            if (neededSkills.length <= 3) {
+                candidates.push({
+                    slotName: equip.slotName,
+                    originIndex: equip.originIndex,
+                    neededSkills: neededSkills,
+                    oldSkillsText: equip.skills.filter(s => s).join(', ') || '无有效词条',
+                    lostCount: lostSkills.length 
+                });
+            }
+        });
+
+        candidates.sort((a, b) => a.lostCount - b.lostCount);
+
+        let uniqueCandidates = [];
+        let seenSlots = new Set();
+        
+        for (let cand of candidates) {
+            if (!seenSlots.has(cand.slotName)) {
+                seenSlots.add(cand.slotName);
+                uniqueCandidates.push(cand);
+            }
+            if (uniqueCandidates.length >= 3) break;
+        }
+
+        if (uniqueCandidates.length > 0) {
+            return uniqueCandidates;
+        } else {
+            return [{ 
+                slotName: "无解", 
+                originIndex: "-", 
+                oldSkillsText: "-", 
+                neededSkills: ["现有组合中各件装备互相牵制，单件替换无法补齐，建议录入更多新装备"] 
+            }];
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
