@@ -202,7 +202,6 @@
         .skill-tag.sub { background-color: #2e1b3d; color: #d8b4e2; border-color: #8a5a99; }
         .skill-tag.holo { background-color: #332014; color: #fca86b; border-color: #a6643e; }
         
-        /* 禁用状态的标签 */
         .skill-tag.disabled {
             opacity: 0.2;
             cursor: not-allowed;
@@ -417,13 +416,30 @@
 
         /* --- 方案选择器 --- */
         .scheme-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .scheme-card { background: #1e1e24; border: 1px solid #3a3a45; border-radius: 6px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 6px; }
+        .scheme-card { position: relative; background: #1e1e24; border: 1px solid #3a3a45; border-radius: 6px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 6px; }
         .scheme-card:hover { background: #252530; }
         .scheme-card.active { border-color: #1976d2; background: rgba(25, 118, 210, 0.1); box-shadow: 0 0 10px rgba(25, 118, 210, 0.2); }
         .scheme-card-header { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: #fff; }
         .scheme-card-header input[type="checkbox"] { accent-color: #1976d2; width: 16px; height: 16px; cursor: pointer; }
         .scheme-card-desc { font-size: 12px; color: #aaa; line-height: 1.4; padding-left: 24px; }
         .scheme-card.active .scheme-card-desc { color: #ccc; }
+
+        /* 删除自定义方案按钮 */
+        .delete-custom-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: #ff5252;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 4px;
+            transition: 0.2s;
+            z-index: 10;
+        }
+        .delete-custom-btn:hover { background: rgba(255, 82, 82, 0.2); }
 
         .custom-config-btn { grid-column: span 2; background: #333; color: #fff; border: 1px dashed #666; border-radius: 6px; padding: 8px; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
         .custom-config-btn:hover { background: #444; border-color: #888; }
@@ -481,7 +497,7 @@
         
         <div class="info-tip">
             💡 <strong>操作提示：</strong><br>
-            1. 选择部位 -> 点击词条标签填入暂存槽。<br>
+            1. 选择部位 -> 点击词条标签填入暂存槽 -> 添加。<br>
             2. 点击下方已有装备的槽位，可直接用标签进行修改。
         </div>
 
@@ -557,6 +573,7 @@
             </label>
 
             <label class="scheme-card" id="card-Custom" style="display:none;">
+                <button class="delete-custom-btn" onclick="deleteCustomScheme(event)" title="删除自定义方案">🗑️</button>
                 <div class="scheme-card-header">
                     <input type="checkbox" id="chk-Custom" onchange="updateActiveSchemes()"> ⚙️ 自定义方案
                 </div>
@@ -802,23 +819,13 @@
 
         let newEquip = [...quickEntryData];
         
-        // 核心修复：处理新装备添加的位置
+        // 🌟 修复添加顺序：追加到末尾
         if (inventoryData[targetSlot].length === 1 && inventoryData[targetSlot][0].every(s => s === "")) {
-            // 如果该部位只有一件空装备，直接覆盖成为第1件
+            // 如果只有默认的空装备，直接覆盖
             inventoryData[targetSlot][0] = newEquip;
-        } else if (inventoryData[targetSlot].length === 0) {
-            inventoryData[targetSlot].push(newEquip);
         } else {
-            // 如果该部位已有其他装备，插入到最前面（序号1）
-            inventoryData[targetSlot].unshift(newEquip);
-            // 更新锁定索引
-            if (lockedEquips[targetSlot] !== undefined) {
-                lockedEquips[targetSlot]++;
-            }
-            // 更新当前激活的槽位索引
-            if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === targetSlot) {
-                activeSlotInfo.equipIndex++;
-            }
+            // 否则追加到末尾
+            inventoryData[targetSlot].push(newEquip);
         }
         
         // 清空暂存区
@@ -975,10 +982,50 @@
         else card.classList.remove('active');
     }
 
+    // 🌟 修改：用分类汇总展示自定义方案
     function updateCustomDesc() {
+        if (Object.keys(customSchemeData).length === 0) {
+            document.getElementById('custom-desc-text').textContent = '点击下方按钮配置';
+            return;
+        }
+        
+        let coreCount = 0, subCount = 0, holoCount = 0;
+        for (let skill in customSchemeData) {
+            if (CORE_SKILLS.includes(skill)) coreCount++;
+            else if (SUB_SKILLS.includes(skill)) subCount++;
+            else if (HOLO_SKILLS.includes(skill)) holoCount++;
+        }
+        
         let desc = [];
-        for (let skill in customSchemeData) desc.push(`${skill} x${customSchemeData[skill]}`);
-        document.getElementById('custom-desc-text').textContent = desc.join(' + ') || '未配置';
+        if (coreCount > 0) desc.push(`${coreCount}种核心词条`);
+        if (subCount > 0) desc.push(`${subCount}种次核心词条`);
+        if (holoCount > 0) desc.push(`${holoCount}种全息词条`);
+        
+        document.getElementById('custom-desc-text').textContent = `包含 ` + desc.join(', ');
+    }
+
+    // 🌟 新增：删除自定义方案
+    function deleteCustomScheme(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        if (!confirm("确定要删除自定义方案吗？")) return;
+        
+        customSchemeData = {};
+        localStorage.removeItem('bis_custom_scheme');
+        
+        activeSchemes = activeSchemes.filter(s => s !== 'Custom');
+        localStorage.setItem('bis_active_schemes', JSON.stringify(activeSchemes));
+        
+        document.getElementById('card-Custom').style.display = 'none';
+        document.getElementById('chk-Custom').checked = false;
+        
+        updateCustomDesc();
+        
+        if (document.getElementById('resultArea').style.display !== 'none') {
+            calculate(true);
+        }
     }
 
     function updateActiveSchemes() {
