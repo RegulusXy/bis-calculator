@@ -17,7 +17,6 @@
             justify-content: center; 
         }
         
-        /* 左右并排布局 */
         .container { 
             max-width: 1400px; 
             width: 100%; 
@@ -37,7 +36,6 @@
             min-width: 0; 
             backdrop-filter: blur(2px);
         }
-        /* 左侧给更多空间适应长下拉框 */
         .panel:nth-child(1) { flex: 1.2 1 550px; }
         .panel:nth-child(2) { flex: 1 1 450px; }
         
@@ -52,7 +50,6 @@
             align-items: center;
         }
 
-        /* 提示信息 */
         .info-tip {
             font-size: 12px;
             color: #ffcc80;
@@ -64,7 +61,7 @@
             line-height: 1.5;
         }
 
-        /* --- 右侧面板内的目标看板 --- */
+        /* --- 目标看板 --- */
         .goal-board {
             background: #1e1e24;
             border: 1px solid #3a3a45;
@@ -76,9 +73,6 @@
             font-size: 14px;
             color: #aaa;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
         .goal-group { margin-bottom: 12px; }
         .goal-group:last-child { margin-bottom: 0; }
@@ -89,9 +83,11 @@
             border-left: 3px solid #777;
             padding-left: 6px;
         }
-        .goal-group.priority .goal-group-label { border-left-color: #5c8ab8; color: #8ab4f8; }
+        .goal-group.core .goal-group-label { border-left-color: #4a7ba6; color: #8ab4f8; }
+        .goal-group.subcore .goal-group-label { border-left-color: #8a5a99; color: #d8b4e2; }
+        .goal-group.holo .goal-group-label { border-left-color: #a6643e; color: #fca86b; }
 
-        .goal-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .goal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
         .goal-tag {
             font-size: 12px;
             padding: 4px 8px;
@@ -100,27 +96,10 @@
             border: 1px solid #555;
             white-space: nowrap; 
         }
-        .goal-tag.req-3 { color: #8ab4f8; border-color: #4a7ba6; background: rgba(74, 123, 166, 0.1); }
-        .goal-tag.req-1 { color: #fca86b; border-color: #a6643e; background: rgba(166, 100, 62, 0.1); }
-        .goal-tag.low-priority {
-            color: #888;
-            border-color: #444;
-            background: rgba(255, 255, 255, 0.02);
-            text-decoration: line-through;
-            position: relative;
-        }
-        .goal-tag.low-priority::after {
-            content: "最低";
-            position: absolute;
-            top: -8px;
-            right: -5px;
-            background: #555;
-            color: #fff;
-            font-size: 9px;
-            padding: 0 4px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
+        /* 配色 */
+        .tag-core { color: #8ab4f8; border-color: #4a7ba6; background: rgba(74, 123, 166, 0.1); }
+        .tag-sub { color: #d8b4e2; border-color: #8a5a99; background: rgba(138, 90, 153, 0.1); }
+        .tag-holo { color: #fca86b; border-color: #a6643e; background: rgba(166, 100, 62, 0.1); }
 
         .slot-group {
             background: #22222a;
@@ -167,7 +146,6 @@
             cursor: default;
         }
 
-        /* --- 锁定必选样式 --- */
         .equip-card.locked {
             border: 2px solid #2196F3;
             background-color: rgba(33, 150, 243, 0.15);
@@ -176,7 +154,6 @@
         }
         .equip-card.locked .equip-index { color: #2196F3; }
 
-        /* --- 选中高亮样式 --- */
         .equip-card.selected {
             border: 2px solid #4CAF50;
             background-color: rgba(76, 175, 80, 0.15);
@@ -189,10 +166,8 @@
             box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
         }
 
-        /* --- 重复装备标记 --- */
         .equip-card.duplicate { border: 2px dashed #ff9800; }
         
-        /* --- 可弃用标记 --- */
         .equip-card.can-trash {
             opacity: 0.5;
             background: #1a1a1f;
@@ -202,7 +177,6 @@
             border: 2px dashed #666;
         }
 
-        /* 角标通用样式 */
         .badge {
             position: absolute;
             top: -8px;
@@ -229,11 +203,9 @@
             transition: color 0.2s;
         }
         .equip-index:hover { color: #fff; }
-        
         .equip-card.duplicate .equip-index { color: #ff9800; }
         .equip-card.can-trash .equip-index { color: #666; }
 
-        /* 下拉框基础样式 */
         select { 
             flex: 1 1 0%; 
             min-width: 0; 
@@ -346,6 +318,19 @@
             display: inline-block;
             white-space: nowrap;
         }
+
+        /* 方案标识大字 */
+        .scheme-badge {
+            display: inline-block;
+            background: #1976d2;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(25, 118, 210, 0.4);
+        }
         
         .suggestion-box {
             background: #2a2215;
@@ -401,7 +386,7 @@
         
         <div class="info-tip">
             💡 <strong>操作提示：</strong><br>
-            1. 点击 <strong>#序号</strong> 设为 <strong>🔒 必选锁定</strong>（亮蓝框）。<br>
+            1. 点击 <strong>#序号</strong> 设为 <strong>🔒 必选锁定</strong>。<br>
             2. 使用右侧的 <strong>↑ / ↓</strong> 按钮调整装备顺序。<br>
             3. 灰色“可弃用”装备悬停看原因，点击 ✖ 安全清理。
         </div>
@@ -415,24 +400,29 @@
         
         <!-- 目标看板 -->
         <div class="goal-board">
-            <div class="goal-title">🎯 计算目标：主词条优先 > 职业专属 > 爆伤</div>
-            <div class="goal-group priority">
-                <div class="goal-group-label">🌟 高优先级主词条 (各需 3 个)</div>
-                <div class="goal-tags" id="goalReq3"></div>
+            <div class="goal-title">🎯 毕业目标方案 (新方案A/B 具有高收益优先权)</div>
+            <div class="goal-group core">
+                <div class="goal-group-label">🌟 核心词条 (5种，各需 3 个)</div>
+                <div class="goal-tags" id="goalCore"></div>
             </div>
-            <div class="goal-group">
-                <div class="goal-group-label">专属词条 (Critical Damage 优先级最低)</div>
-                <div class="goal-tags" id="goalReq1"></div>
+            <div class="goal-group subcore">
+                <div class="goal-group-label">🔮 次核心词条 (方案A专用: 任选1种凑3个)</div>
+                <div class="goal-tags" id="goalSub"></div>
+            </div>
+            <div class="goal-group holo">
+                <div class="goal-group-label">✨ 全息词条 (方案B: 任选3种各1个 / 方案C: 所有全息各1个)</div>
+                <div class="goal-tags" id="goalHolo"></div>
             </div>
         </div>
 
         <button class="calc-btn" onclick="calculate()">🔍 计算最佳组合</button>
         
         <div id="resultArea" style="display:none;">
+            <div id="schemeBadge" class="scheme-badge"></div>
             <div id="comboShow" class="result-box"></div>
             <div id="suggestionArea"></div>
             
-            <h3 style="margin-top: 20px; font-size: 16px; color: #fff; border-left: 4px solid #ffd54f; padding-left: 10px;">📊 该组合的词条统计</h3>
+            <h3 style="margin-top: 20px; font-size: 16px; color: #fff; border-left: 4px solid #ffd54f; padding-left: 10px;">📊 当前方案词条统计</h3>
             <table id="statsTable">
                 <thead>
                     <tr>
@@ -472,20 +462,17 @@
 
     const slotNames = ["帽子", "上衣", "下装", "披风", "手套", "鞋子"];
     
-    const targets = {
-        "Dimensional Leap": 3, 
-        "White Hole": 3, 
-        "Registry": 3, 
-        "Attack Power & Magic ATT": 3,
-        "Magician Attack": 1, 
-        "Pirate Attack": 1, 
-        "Thief Attack": 1, 
-        "Warrior Attack": 1, 
-        "Bowman Attack": 1, 
-        "Critical Damage": 1
-    };
+    // 词条分类定义
+    const CORE_SKILLS = ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT", "Critical Damage"];
+    const SUB_SKILLS = ["Damage", "Boss Damage"];
+    const HOLO_SKILLS = ["Magician Attack", "Pirate Attack", "Thief Attack", "Warrior Attack", "Bowman Attack"];
     
-    const skillList = Object.keys(targets);
+    // 权重设定
+    const W_CORE = 100;
+    const W_SUB = 30;
+    const W_HOLO = 10;
+
+    const allSkills = [...CORE_SKILLS, ...SUB_SKILLS, ...HOLO_SKILLS];
     
     let inventoryData = JSON.parse(localStorage.getItem('bis_inventory_v1')) || {};
     let lockedEquips = JSON.parse(localStorage.getItem('bis_locked_v1')) || {}; 
@@ -503,32 +490,29 @@
     }
 
     function renderGoalBoard() {
-        const req3Container = document.getElementById('goalReq3');
-        const req1Container = document.getElementById('goalReq1');
+        const coreBox = document.getElementById('goalCore');
+        const subBox = document.getElementById('goalSub');
+        const holoBox = document.getElementById('goalHolo');
         
-        skillList.filter(s => targets[s] === 3).forEach(skill => {
+        CORE_SKILLS.forEach(skill => {
             const tag = document.createElement('span');
-            tag.className = 'goal-tag req-3';
+            tag.className = 'goal-tag tag-core';
             tag.textContent = `${skill} x3`;
-            req3Container.appendChild(tag);
+            coreBox.appendChild(tag);
         });
 
-        const req1Skills = skillList.filter(s => targets[s] === 1);
-        req1Skills.sort((a, b) => {
-            if (a === 'Critical Damage') return 1;
-            if (b === 'Critical Damage') return -1;
-            return 0;
-        });
-
-        req1Skills.forEach(skill => {
+        SUB_SKILLS.forEach(skill => {
             const tag = document.createElement('span');
-            if (skill === 'Critical Damage') {
-                tag.className = 'goal-tag req-1 low-priority'; 
-            } else {
-                tag.className = 'goal-tag req-1';
-            }
+            tag.className = 'goal-tag tag-sub';
+            tag.textContent = `${skill} x3 (或)`;
+            subBox.appendChild(tag);
+        });
+
+        HOLO_SKILLS.forEach(skill => {
+            const tag = document.createElement('span');
+            tag.className = 'goal-tag tag-holo';
             tag.textContent = `${skill} x1`;
-            req1Container.appendChild(tag);
+            holoBox.appendChild(tag);
         });
     }
 
@@ -593,9 +577,7 @@
                 if (isTrash) card.classList.add('can-trash');
                 if (isLocked) card.classList.add('locked');
 
-                if (isTrash && !isLocked) {
-                    card.title = getTrashReason(slot, index);
-                }
+                if (isTrash && !isLocked) card.title = getTrashReason(slot, index);
 
                 let indexHTML = `<div class="equip-index" onclick="toggleLock('${slot}', ${index})" title="点击${isLocked ? '取消必选' : '设为必选'}">
                     ${isLocked ? '🔒' : '#'}${index + 1}
@@ -604,13 +586,13 @@
                 let selectsHTML = indexHTML;
                 for (let i = 0; i < 3; i++) {
                     let opts = '<option value="" style="background-color: #1e1e24; color: #888;">- 无 -</option>';
-                    skillList.forEach(skill => {
+                    allSkills.forEach(skill => {
                         // 柔和版配色：下拉选项
                         let optStyle = '';
-                        if (targets[skill] === 3) {
+                        if (CORE_SKILLS.includes(skill)) {
                             optStyle = 'background-color: #1a2634; color: #8ab4f8;'; 
-                        } else if (skill === 'Critical Damage') {
-                            optStyle = 'background-color: #222222; color: #888888;'; 
+                        } else if (SUB_SKILLS.includes(skill)) {
+                            optStyle = 'background-color: #2e1b3d; color: #d8b4e2;'; 
                         } else {
                             optStyle = 'background-color: #332014; color: #fca86b;'; 
                         }
@@ -621,10 +603,10 @@
                     const currentVal = equip[i] || '';
                     let selectStyle = '';
                     if (currentVal) {
-                        if (targets[currentVal] === 3) {
+                        if (CORE_SKILLS.includes(currentVal)) {
                             selectStyle = 'border-color: #4a7ba6; color: #8ab4f8; background-color: #1a2634;';
-                        } else if (currentVal === 'Critical Damage') {
-                            selectStyle = 'border-color: #444; color: #888; background-color: #222;';
+                        } else if (SUB_SKILLS.includes(currentVal)) {
+                            selectStyle = 'border-color: #8a5a99; color: #d8b4e2; background-color: #2e1b3d;';
                         } else {
                             selectStyle = 'border-color: #a6643e; color: #fca86b; background-color: #332014;';
                         }
@@ -644,12 +626,8 @@
 
                 selectsHTML += `<button class="remove-btn" onclick="removeEquip('${slot}', ${index})">✖</button>`;
                 
-                if (isDuplicate) {
-                    selectsHTML += `<div class="badge duplicate-badge">重复</div>`;
-                }
-                if (isTrash && !isLocked) {
-                    selectsHTML += `<div class="badge trash-badge">可弃用</div>`;
-                }
+                if (isDuplicate) selectsHTML += `<div class="badge duplicate-badge">重复</div>`;
+                if (isTrash && !isLocked) selectsHTML += `<div class="badge trash-badge">可弃用</div>`;
 
                 card.innerHTML = selectsHTML;
                 groupDiv.appendChild(card);
@@ -669,26 +647,17 @@
         [arr[index], arr[targetIndex]] = [arr[targetIndex], arr[index]];
 
         if (lockedEquips[slot] !== undefined) {
-            if (lockedEquips[slot] === index) {
-                lockedEquips[slot] = targetIndex;
-            } else if (lockedEquips[slot] === targetIndex) {
-                lockedEquips[slot] = index;
-            }
+            if (lockedEquips[slot] === index) lockedEquips[slot] = targetIndex;
+            else if (lockedEquips[slot] === targetIndex) lockedEquips[slot] = index;
         }
 
-        if (trashableEquips.size > 0) {
-            calculate(true); 
-        } else {
-            renderInventory();
-        }
+        if (trashableEquips.size > 0) calculate(true); 
+        else renderInventory();
     }
 
     function toggleLock(slot, index) {
-        if (lockedEquips[slot] === index) {
-            delete lockedEquips[slot]; 
-        } else {
-            lockedEquips[slot] = index; 
-        }
+        if (lockedEquips[slot] === index) delete lockedEquips[slot]; 
+        else lockedEquips[slot] = index; 
         
         trashableEquips.clear();
         clearHighlights(); 
@@ -700,16 +669,11 @@
     }
 
     function clearHighlights() {
-        document.querySelectorAll('.equip-card').forEach(el => {
-            el.classList.remove('selected');
-        });
+        document.querySelectorAll('.equip-card').forEach(el => el.classList.remove('selected'));
     }
 
     function addEquip(slot) {
-        if (inventoryData[slot].length >= 10) {
-            alert("一个部位最多添加10件装备，太多了计算机会累的~");
-            return;
-        }
+        if (inventoryData[slot].length >= 10) return alert("一个部位最多添加10件装备！");
         inventoryData[slot].push(["", "", ""]);
         trashableEquips.clear(); 
         renderInventory();
@@ -722,11 +686,8 @@
         const isTrash = trashableEquips.has(`${slot}-${index + 1}`);
         
         if (lockedEquips[slot] !== undefined) {
-            if (lockedEquips[slot] === index) {
-                delete lockedEquips[slot]; 
-            } else if (lockedEquips[slot] > index) {
-                lockedEquips[slot]--; 
-            }
+            if (lockedEquips[slot] === index) delete lockedEquips[slot]; 
+            else if (lockedEquips[slot] > index) lockedEquips[slot]--; 
         }
 
         if (inventoryData[slot].length <= 1) {
@@ -736,9 +697,8 @@
             inventoryData[slot].splice(index, 1);
         }
 
-        if (isTrash) {
-            calculate(true); 
-        } else {
+        if (isTrash) calculate(true); 
+        else {
             trashableEquips.clear();
             renderInventory();
             clearHighlights(); 
@@ -773,8 +733,7 @@
     function calculate(isSilent = false) {
         for (let slot of slotNames) {
             if (!inventoryData[slot] || inventoryData[slot].length === 0) {
-                alert(`【${slot}】部位没有任何装备！`);
-                return;
+                alert(`【${slot}】部位没有任何装备！`); return;
             }
         }
 
@@ -785,70 +744,84 @@
             document.getElementById('resultArea').style.display = 'block';
             document.getElementById('comboShow').innerHTML = '<div style="color:#fff;">正在疯狂计算中...</div>';
             document.getElementById('suggestionArea').innerHTML = '';
+            document.getElementById('schemeBadge').style.display = 'none';
             setTimeout(runCoreCalc, 50);
         } else {
             runCoreCalc();
         }
     }
 
+    // --- 评分核心逻辑（增加了新方案收益优先机制） ---
+    function evaluateSchemes(counts) {
+        // 方案A：5核心*3 + 1次核心*3
+        let missA = 0;
+        CORE_SKILLS.forEach(s => missA += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
+        let subMiss1 = Math.max(0, 3 - (counts["Damage"]||0));
+        let subMiss2 = Math.max(0, 3 - (counts["Boss Damage"]||0));
+        missA += Math.min(subMiss1, subMiss2) * W_SUB; 
+
+        // 方案B：5核心*3 + 任意3个不同全息*1
+        let missB = 0;
+        CORE_SKILLS.forEach(s => missB += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
+        let holoCounts = HOLO_SKILLS.map(h => counts[h]||0).sort((a,b) => b-a); 
+        let holoMiss = 0;
+        for(let i=0; i<3; i++) {
+            if(holoCounts[i] === 0) holoMiss++; 
+        }
+        missB += holoMiss * W_HOLO;
+
+        // 方案C：4老核心*3 + 5全息*1 + 1爆伤*1
+        let missC = 0;
+        ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => {
+            missC += Math.max(0, 3 - (counts[s]||0)) * W_CORE;
+        });
+        missC += Math.max(0, 1 - (counts["Critical Damage"]||0)) * W_CORE; 
+        HOLO_SKILLS.forEach(s => missC += Math.max(0, 1 - (counts[s]||0)) * W_HOLO);
+
+        // 🌟 核心改动：给方案C加上惩罚分（50分），确保在同等或微小差距下，优先选择收益更高的方案A或B
+        // 50分的概念：相当于5个全息词条的差距，或接近2个次核心词条的差距。
+        // 只有当你仓库里的装备真的极其适合方案C（比如完全没有次核心，且老核心极多）时，C才会胜出。
+        let PENALTY_C = 50; 
+        let finalScoreC = missC + PENALTY_C;
+
+        let bestScore = Math.min(missA, missB, finalScoreC);
+        let bestScheme = '';
+        if (bestScore === missA) bestScheme = 'A';
+        else if (bestScore === missB) bestScheme = 'B';
+        else bestScheme = 'C';
+
+        return { missA, missB, missC, bestScore, bestScheme };
+    }
+
     function runCoreCalc() {
         let bestCombo = null;
-        let minWeightedMissing = Infinity;
-        let minWeightedExcess = Infinity;
+        let minOverallMissing = Infinity;
         let optimalEquipsSet = new Set(); 
 
         function dfs(slotIndex, currentCombo) {
             if (slotIndex === slotNames.length) {
                 let counts = {};
-                skillList.forEach(s => counts[s] = 0);
-                
+                allSkills.forEach(s => counts[s] = 0);
                 currentCombo.forEach(equip => {
                     equip.forEach(skill => {
-                        if (skill && counts[skill] !== undefined) counts[skill]++;
+                        if (skill) counts[skill] = (counts[skill] || 0) + 1;
                     });
                 });
 
-                let weightedMissing = 0;
-                let weightedExcess = 0;
-                let totalMissingCount = 0; 
-
-                skillList.forEach(skill => {
-                    const target = targets[skill];
-                    const current = counts[skill];
-                    
-                    let weight = 1; 
-                    if (target === 3) weight = 100; 
-                    else if (skill !== 'Critical Damage') weight = 10;  
-
-                    if (current < target) {
-                        weightedMissing += (target - current) * weight;
-                        totalMissingCount += (target - current);
-                    } else if (current > target) {
-                        weightedExcess += (current - target) * weight;
-                    }
-                });
-
-                if (weightedMissing < minWeightedMissing || 
-                   (weightedMissing === minWeightedMissing && weightedExcess < minWeightedExcess)) {
-                    
-                    minWeightedMissing = weightedMissing;
-                    minWeightedExcess = weightedExcess;
-                    
+                let evalResult = evaluateSchemes(counts);
+                
+                if (evalResult.bestScore < minOverallMissing) {
+                    minOverallMissing = evalResult.bestScore;
                     bestCombo = {
                         combo: currentCombo.map((eq, i) => ({ skills: eq, index: i })),
                         counts: {...counts},
-                        totalMissing: totalMissingCount
+                        scheme: evalResult.bestScheme,
+                        schemeScore: evalResult.bestScore
                     };
-                    
                     optimalEquipsSet.clear();
-                    currentCombo.forEach(eq => {
-                        optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`);
-                    });
-                    
-                } else if (weightedMissing === minWeightedMissing && weightedExcess === minWeightedExcess) {
-                    currentCombo.forEach(eq => {
-                        optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`);
-                    });
+                    currentCombo.forEach(eq => optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`));
+                } else if (evalResult.bestScore === minOverallMissing) {
+                    currentCombo.forEach(eq => optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`));
                 }
                 return;
             }
@@ -857,9 +830,7 @@
             let lockedIndex = lockedEquips[slot];
 
             inventoryData[slot].forEach((equip, idx) => {
-                if (lockedIndex !== undefined && lockedIndex !== idx) {
-                    return; 
-                }
+                if (lockedIndex !== undefined && lockedIndex !== idx) return; 
 
                 let equipCopy = [...equip];
                 equipCopy._originIndex = idx + 1;
@@ -877,9 +848,7 @@
             if (inventoryData[slot].length > 1 && lockedEquips[slot] === undefined) {
                 inventoryData[slot].forEach((equip, idx) => {
                     const key = `${slot}-${idx + 1}`;
-                    if (!optimalEquipsSet.has(key)) {
-                        trashableEquips.add(key);
-                    }
+                    if (!optimalEquipsSet.has(key)) trashableEquips.add(key);
                 });
             }
         });
@@ -891,20 +860,43 @@
     function displayResult(result) {
         const comboBox = document.getElementById('comboShow');
         const suggestionArea = document.getElementById('suggestionArea');
+        const schemeBadge = document.getElementById('schemeBadge');
         
+        // 显示当前方案大字
+        const schemeNames = { 'A': '🌟 方案A：次核心路线', 'B': '✨ 方案B：全息路线', 'C': '📜 方案C：初版兼容路线' };
+        schemeBadge.textContent = `当前最优规划：【${schemeNames[result.scheme]}】`;
+        schemeBadge.style.display = 'inline-block';
+        
+        // 如果选择了C，但差距很小，可以加个提示（可选，这里不加了以免干扰）
+
         let titleText = '';
         let boxClass = 'result-box ';
         
-        if (result.totalMissing === 0) {
-            titleText = `🎉 完美毕业！找到了完美满足目标的组合！`;
+        // 算总缺少词条数用于展示（不按权重，只按人头数）
+        let missingCounts = 0;
+        if (result.scheme === 'A') {
+            CORE_SKILLS.forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
+            let subM = Math.min(Math.max(0, 3 - (result.counts["Damage"]||0)), Math.max(0, 3 - (result.counts["Boss Damage"]||0)));
+            missingCounts += subM;
+        } else if (result.scheme === 'B') {
+            CORE_SKILLS.forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
+            let holoCounts = HOLO_SKILLS.map(h => result.counts[h]||0).sort((a,b)=>b-a);
+            for(let i=0; i<3; i++) if(holoCounts[i]===0) missingCounts++;
+        } else {
+            ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
+            missingCounts += Math.max(0, 1 - (result.counts["Critical Damage"]||0));
+            HOLO_SKILLS.forEach(s => missingCounts += Math.max(0, 1 - (result.counts[s]||0)));
+        }
+
+        if (missingCounts === 0) {
+            titleText = `🎉 完美毕业！该组合已满足方案${result.scheme}的全部需求！`;
             boxClass += '';
         } else {
-            titleText = `⚠️ 现有装备无法完美毕业，这是最接近的组合 (还差 ${result.totalMissing} 个词条)`;
+            titleText = `⚠️ 现有装备无法完美毕业，这是当前最接近的方案${result.scheme}组合 (还差 ${missingCounts} 个词条)`;
             boxClass += 'fail';
         }
 
         let detailHTML = `<div class="result-title">${titleText}</div><div class="result-detail">`;
-        
         slotNames.forEach((slot, i) => {
             const equipInfo = result.combo[i];
             const originIndex = equipInfo.skills._originIndex; 
@@ -929,14 +921,14 @@
         comboBox.className = boxClass;
         comboBox.innerHTML = detailHTML;
 
-        if (result.totalMissing > 0) {
-            let suggestions = generateReplacements(result);
+        // 替换建议 (基于当前最优方案)
+        if (missingCounts > 0) {
+            let suggestions = generateReplacements(result, result.scheme);
             if (suggestions.length > 0) {
                 let suggestionsHTML = `
                     <div class="suggestion-box">
-                        <div class="suggestion-title">💡 完美毕业路线推荐 (缺 ${result.totalMissing} 个词条)</div>
+                        <div class="suggestion-title">💡 方案${result.scheme} 毕业路线推荐 (缺 ${missingCounts} 个词条)</div>
                 `;
-                
                 suggestions.forEach((sug, idx) => {
                     suggestionsHTML += `
                         <div class="suggestion-item">
@@ -949,7 +941,6 @@
                         </div>
                     `;
                 });
-                
                 suggestionsHTML += `</div>`;
                 suggestionArea.innerHTML = suggestionsHTML;
             } else {
@@ -959,25 +950,43 @@
             suggestionArea.innerHTML = '';
         }
 
+        // 统计表 (基于当前方案需求)
         const tbody = document.getElementById('statsBody');
         tbody.innerHTML = '';
         
-        skillList.forEach(skill => {
-            const target = targets[skill];
-            const current = result.counts[skill];
+        let reqDict = {};
+        CORE_SKILLS.forEach(s => reqDict[s] = 3);
+        SUB_SKILLS.forEach(s => reqDict[s] = 0); 
+        HOLO_SKILLS.forEach(s => reqDict[s] = 0);
+
+        if (result.scheme === 'A') {
+            let sub1 = result.counts["Damage"] || 0;
+            let sub2 = result.counts["Boss Damage"] || 0;
+            if (sub1 >= sub2) reqDict["Damage"] = 3; else reqDict["Boss Damage"] = 3;
+        } else if (result.scheme === 'B') {
+            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0));
+            for(let i=0; i<3; i++) reqDict[sortedHolo[i]] = 1;
+        } else if (result.scheme === 'C') {
+            reqDict["Critical Damage"] = 1;
+            HOLO_SKILLS.forEach(s => reqDict[s] = 1);
+            SUB_SKILLS.forEach(s => reqDict[s] = 0);
+        }
+
+        allSkills.forEach(skill => {
+            let target = reqDict[skill] || 0;
+            let current = result.counts[skill] || 0;
             
+            if (target === 0 && current === 0) return; 
+
             let statusText = '';
             let statusClass = '';
 
             if (current === target) {
-                statusText = '完美';
-                statusClass = 'missing-zero';
+                statusText = '完美'; statusClass = 'missing-zero';
             } else if (current < target) {
-                statusText = `缺 ${target - current}`;
-                statusClass = 'missing-pos';
+                statusText = `缺 ${target - current}`; statusClass = 'missing-pos';
             } else {
-                statusText = `超 ${current - target}`;
-                statusClass = 'missing-over';
+                statusText = `超 ${current - target}`; statusClass = 'missing-over';
             }
 
             const tr = document.createElement('tr');
@@ -991,70 +1000,62 @@
         });
     }
 
-    function generateReplacements(result) {
-        let missingMain = [];
-        let missingSub = [];
-        let missingCrit = [];
-
-        skillList.forEach(skill => {
-            let diff = targets[skill] - result.counts[skill];
-            if (diff > 0) {
-                for(let i=0; i<diff; i++) {
-                    if (targets[skill] === 3) missingMain.push(skill);
-                    else if (skill === 'Critical Damage') missingCrit.push(skill);
-                    else missingSub.push(skill);
+    function generateReplacements(result, scheme) {
+        let missingList = [];
+        if (scheme === 'A') {
+            CORE_SKILLS.forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
+            let sub1M = Math.max(0, 3 - (result.counts["Damage"]||0));
+            let sub2M = Math.max(0, 3 - (result.counts["Boss Damage"]||0));
+            if (sub1M < sub2M) { for(let i=0; i<sub1M; i++) missingList.push("Damage"); }
+            else { for(let i=0; i<sub2M; i++) missingList.push("Boss Damage"); }
+        } else if (scheme === 'B') {
+            CORE_SKILLS.forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
+            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0));
+            for(let i=0; i<3; i++) {
+                if((result.counts[sortedHolo[i]]||0) === 0) {
+                    missingList.push(sortedHolo[i]); 
                 }
             }
-        });
-
-        let missingList = [...missingMain, ...missingSub, ...missingCrit];
+        } else {
+            ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
+            if((result.counts["Critical Damage"]||0) === 0) missingList.unshift("Critical Damage");
+            HOLO_SKILLS.forEach(s => { if((result.counts[s]||0) === 0) missingList.push(s); });
+        }
 
         if (missingList.length > 3) {
-             return [{ 
-                 slotName: "提示", 
-                 originIndex: "-", 
-                 oldSkillsText: "-", 
-                 neededSkills: [`当前缺口达到 ${missingList.length} 个，单件替换无法毕业，请继续刷装备`] 
-             }];
+             return [{ slotName: "提示", originIndex: "-", oldSkillsText: "-", neededSkills: [`当前缺口达到 ${missingList.length} 个，单件替换无法毕业，请继续刷装备`] }];
         }
 
         let currentEquips = result.combo.map((eq, slotIdx) => ({
-            slotName: slotNames[slotIdx],
-            skills: [...eq.skills],
-            originIndex: eq.skills._originIndex
+            slotName: slotNames[slotIdx], skills: [...eq.skills], originIndex: eq.skills._originIndex
         }));
 
         let candidates = [];
-        
         currentEquips.forEach((equip, index) => {
             let lostSkills = [];
             let tempCounts = {...result.counts}; 
             
             equip.skills.forEach(s => {
-                if (s && tempCounts[s] !== undefined && tempCounts[s] > 0) {
-                    tempCounts[s]--;
-                }
+                if (s && tempCounts[s] !== undefined && tempCounts[s] > 0) tempCounts[s]--;
             });
             
+            let reqDict = {};
+            if(scheme==='A'){ CORE_SKILLS.forEach(s=>reqDict[s]=3); if(result.counts["Damage"]>=result.counts["Boss Damage"]) reqDict["Damage"]=3; else reqDict["Boss Damage"]=3; }
+            if(scheme==='B'){ CORE_SKILLS.forEach(s=>reqDict[s]=3); let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0)); for(let i=0;i<3;i++) reqDict[sortedHolo[i]]=1; }
+            if(scheme==='C'){ ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s=>reqDict[s]=3); reqDict["Critical Damage"]=1; HOLO_SKILLS.forEach(s=>reqDict[s]=1); }
+
             equip.skills.forEach(s => {
-                if (!s) return;
-                if (tempCounts[s] < targets[s]) {
-                    lostSkills.push(s);
-                }
+                if (s && tempCounts[s] < (reqDict[s]||0)) lostSkills.push(s);
             });
 
             let neededSkillsSet = new Set(missingList);
             lostSkills.forEach(s => neededSkillsSet.add(s));
-            
             let neededSkills = Array.from(neededSkillsSet);
             
             if (neededSkills.length <= 3) {
                 candidates.push({
-                    slotName: equip.slotName,
-                    originIndex: equip.originIndex,
-                    neededSkills: neededSkills,
-                    oldSkillsText: equip.skills.filter(s => s).join(', ') || '无有效词条',
-                    lostCount: lostSkills.length 
+                    slotName: equip.slotName, originIndex: equip.originIndex, neededSkills: neededSkills,
+                    oldSkillsText: equip.skills.filter(s => s).join(', ') || '无有效词条', lostCount: lostSkills.length 
                 });
             }
         });
@@ -1063,25 +1064,15 @@
 
         let uniqueCandidates = [];
         let seenSlots = new Set();
-        
         for (let cand of candidates) {
             if (!seenSlots.has(cand.slotName)) {
-                seenSlots.add(cand.slotName);
-                uniqueCandidates.push(cand);
+                seenSlots.add(cand.slotName); uniqueCandidates.push(cand);
             }
             if (uniqueCandidates.length >= 3) break;
         }
 
-        if (uniqueCandidates.length > 0) {
-            return uniqueCandidates;
-        } else {
-            return [{ 
-                slotName: "无解", 
-                originIndex: "-", 
-                oldSkillsText: "-", 
-                neededSkills: ["现有组合中各件装备互相牵制，单件替换无法补齐，建议录入更多新装备"] 
-            }];
-        }
+        if (uniqueCandidates.length > 0) return uniqueCandidates;
+        return [{ slotName: "无解", originIndex: "-", oldSkillsText: "-", neededSkills: ["组合互相牵制，单件替换无法补齐，建议继续刷装备"] }];
     }
 
     window.onload = init;
