@@ -18,7 +18,7 @@
         }
         
         .container { 
-            max-width: 1400px; 
+            max-width: 1450px; 
             width: 100%; 
             display: flex; 
             gap: 20px; 
@@ -36,8 +36,8 @@
             min-width: 0; 
             backdrop-filter: blur(2px);
         }
-        .panel:nth-child(1) { flex: 1.2 1 550px; }
-        .panel:nth-child(2) { flex: 1 1 450px; }
+        .panel:nth-child(1) { flex: 1.2 1 650px; }
+        .panel:nth-child(2) { flex: 1 1 500px; }
         
         h2 { 
             margin-top: 0; 
@@ -61,46 +61,159 @@
             line-height: 1.5;
         }
 
-        /* --- 目标看板 --- */
-        .goal-board {
+        /* --- 快速录入区 --- */
+        .quick-entry-box {
+            background: #1e1e24;
+            border: 1px solid #3a3a45;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-section-title { font-size: 13px; color: #aaa; margin-bottom: 8px; }
+
+        .slot-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .slot-btn {
+            background: #2b2b36;
+            color: #ccc;
+            border: 1px solid #444;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .slot-btn:hover { background: #333; color: #fff; }
+        .slot-btn.active {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+            font-weight: bold;
+            box-shadow: 0 0 8px rgba(25, 118, 210, 0.4);
+        }
+
+        .quick-entry-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quick-label { font-size: 14px; color: #aaa; white-space: nowrap; }
+        
+        .quick-slots {
+            display: flex;
+            flex: 1;
+            gap: 6px;
+            min-width: 0;
+        }
+        .quick-slot {
+            flex: 1;
+            height: 34px;
+            background: #2b2b36;
+            border: 1px dashed #555;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .quick-slot:hover { border-color: #888; }
+        .quick-slot.active {
+            border: 1px solid #4CAF50;
+            box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+            background: rgba(76, 175, 80, 0.1);
+            border-style: solid;
+        }
+        .quick-slot .slot-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+        .quick-slot .slot-empty { color: #666; font-style: italic; pointer-events: none; }
+        .quick-slot .clear-slot-btn { color: #666; cursor: pointer; font-size: 14px; margin-left: 4px; z-index: 2; }
+        .quick-slot .clear-slot-btn:hover { color: #ff5252; }
+        
+        .quick-slot.filled.core { background-color: #1a2634; border-color: #4a7ba6; border-style: solid; }
+        .quick-slot.filled.core .slot-text { color: #8ab4f8; }
+        .quick-slot.filled.sub { background-color: #2e1b3d; border-color: #8a5a99; border-style: solid; }
+        .quick-slot.filled.sub .slot-text { color: #d8b4e2; }
+        .quick-slot.filled.holo { background-color: #332014; border-color: #a6643e; border-style: solid; }
+        .quick-slot.filled.holo .slot-text { color: #fca86b; }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            height: 34px;
+            padding: 0 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .add-quick-btn { background: #4CAF50; color: white; }
+        .add-quick-btn:hover { background: #45a049; }
+        .clear-quick-btn { background: #444; color: #ccc; }
+        .clear-quick-btn:hover { background: #555; color: #fff; }
+
+        /* --- 词条标签池 --- */
+        .tag-pool {
             background: #1e1e24;
             border: 1px solid #3a3a45;
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 20px;
         }
-        .goal-title {
-            font-size: 14px;
-            color: #aaa;
-            margin-bottom: 10px;
+        .tag-pool-title {
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .goal-group { margin-bottom: 12px; }
-        .goal-group:last-child { margin-bottom: 0; }
-        .goal-group-label { 
-            font-size: 13px; 
-            color: #fff; 
-            margin-bottom: 8px; 
-            border-left: 3px solid #777;
-            padding-left: 6px;
-        }
-        .goal-group.core .goal-group-label { border-left-color: #4a7ba6; color: #8ab4f8; }
-        .goal-group.subcore .goal-group-label { border-left-color: #8a5a99; color: #d8b4e2; }
-        .goal-group.holo .goal-group-label { border-left-color: #a6643e; color: #fca86b; }
-
-        .goal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-        .goal-tag {
+        .tag-pool-title span { font-size: 12px; color: #888; }
+        
+        .tag-group { margin-bottom: 10px; }
+        .tag-group:last-child { margin-bottom: 0; }
+        .tag-group-label { font-size: 12px; color: #777; margin-bottom: 6px; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+        
+        .skill-tag {
             font-size: 12px;
             padding: 4px 8px;
             border-radius: 4px;
-            background: #333;
-            border: 1px solid #555;
-            white-space: nowrap; 
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
-        /* 配色 */
-        .tag-core { color: #8ab4f8; border-color: #4a7ba6; background: rgba(74, 123, 166, 0.1); }
-        .tag-sub { color: #d8b4e2; border-color: #8a5a99; background: rgba(138, 90, 153, 0.1); }
-        .tag-holo { color: #fca86b; border-color: #a6643e; background: rgba(166, 100, 62, 0.1); }
+        .skill-tag:hover { opacity: 0.8; transform: translateY(-1px); }
+        
+        .skill-tag.core { background-color: #1a2634; color: #8ab4f8; border-color: #4a7ba6; }
+        .skill-tag.sub { background-color: #2e1b3d; color: #d8b4e2; border-color: #8a5a99; }
+        .skill-tag.holo { background-color: #332014; color: #fca86b; border-color: #a6643e; }
+        
+        /* 禁用状态的标签 */
+        .skill-tag.disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            transform: none;
+            pointer-events: none;
+        }
 
+        .skill-tag.clear { background-color: #333; color: #aaa; border-color: #555; }
+        .skill-tag.clear:hover { background-color: #e53935; color: #fff; border-color: #e53935; }
+
+        /* --- 装备槽位 --- */
         .slot-group {
             background: #22222a;
             border: 1px solid #3a3a45;
@@ -143,13 +256,11 @@
             align-items: center;
             gap: 6px;
             transition: all 0.3s ease;
-            cursor: default;
         }
 
         .equip-card.locked {
             border: 2px solid #2196F3;
             background-color: rgba(33, 150, 243, 0.15);
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
             opacity: 1 !important; 
         }
         .equip-card.locked .equip-index { color: #2196F3; }
@@ -163,7 +274,6 @@
         .equip-card.locked.selected {
             border: 2px solid #00E676;
             background-color: rgba(0, 230, 118, 0.15);
-            box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
         }
 
         .equip-card.duplicate { border: 2px dashed #ff9800; }
@@ -206,88 +316,75 @@
         .equip-card.duplicate .equip-index { color: #ff9800; }
         .equip-card.can-trash .equip-index { color: #666; }
 
-        select { 
-            flex: 1 1 0%; 
-            min-width: 0; 
-            padding: 6px 4px; 
-            background: #1e1e24; 
-            color: #fff; 
-            border: 1px solid #555; 
-            border-radius: 4px; 
-            outline: none; 
-            cursor: pointer; 
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-        select:focus { border-color: #888; }
-
-        .sort-controls {
+        /* 槽位样式 */
+        .skill-slots-container {
             display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex-shrink: 0;
+            flex: 1;
+            gap: 6px;
+            min-width: 0;
         }
-        .sort-btn {
-            background: #444;
-            color: #ccc;
-            border: none;
-            border-radius: 3px;
-            width: 20px;
-            height: 14px;
-            cursor: pointer;
-            font-size: 10px;
+        .skill-slot {
+            flex: 1;
+            min-width: 0;
+            height: 32px;
+            background: #1e1e24;
+            border: 1px solid #555;
+            border-radius: 4px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0;
+            justify-content: space-between;
+            padding: 0 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-slot:hover { border-color: #888; }
+        .skill-slot.active {
+            border-color: #4CAF50;
+            box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .skill-slot .slot-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+        .skill-slot .slot-empty { color: #666; font-style: italic; pointer-events: none; }
+        .skill-slot .clear-slot-btn { color: #666; cursor: pointer; font-size: 14px; padding: 0 2px; margin-left: 4px; z-index: 2; }
+        .skill-slot .clear-slot-btn:hover { color: #ff5252; }
+        
+        .skill-slot.filled.core { background-color: #1a2634; border-color: #4a7ba6; }
+        .skill-slot.filled.core .slot-text { color: #8ab4f8; }
+        .skill-slot.filled.sub { background-color: #2e1b3d; border-color: #8a5a99; }
+        .skill-slot.filled.sub .slot-text { color: #d8b4e2; }
+        .skill-slot.filled.holo { background-color: #332014; border-color: #a6643e; }
+        .skill-slot.filled.holo .slot-text { color: #fca86b; }
+
+        .sort-controls { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .sort-btn {
+            background: #444; color: #ccc; border: none; border-radius: 3px;
+            width: 20px; height: 14px; cursor: pointer; font-size: 10px;
+            display: flex; align-items: center; justify-content: center; padding: 0;
         }
         .sort-btn:hover:not(:disabled) { background: #666; color: #fff; }
         .sort-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .remove-btn {
-            background: #e53935;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            width: 24px;
-            height: 30px;
-            cursor: pointer;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            background: #e53935; color: white; border: none; border-radius: 4px;
+            width: 24px; height: 30px; cursor: pointer; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
         .remove-btn:hover { background: #c62828; }
 
         .calc-btn {
-            width: 100%;
-            padding: 15px;
-            background: #1976d2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: 0.2s;
+            width: 100%; padding: 15px; background: #1976d2; color: white;
+            border: none; border-radius: 6px; font-size: 18px; font-weight: bold;
+            cursor: pointer; margin-bottom: 20px; transition: 0.2s;
             box-shadow: 0 4px 10px rgba(25, 118, 210, 0.4);
         }
         .calc-btn:hover { background: #1565c0; }
         
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 10px; 
-            font-size: 13px; 
-        }
-        
-        th, td { 
-            padding: 8px 4px; 
-            text-align: center; 
-            border-bottom: 1px solid #444; 
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid #444; }
         th:first-child, td:first-child { text-align: left; padding-left: 10px; }
         th { color: #aaa; font-weight: normal; }
         
@@ -295,83 +392,81 @@
         .missing-zero { color: #4CAF50; font-weight: bold; } 
         .missing-over { color: #42a5f5; font-weight: bold; } 
         
-        .total-row { font-weight: bold; background-color: #333; }
-
-        .result-box {
-            background: #1e1e24;
-            border-left: 4px solid #4CAF50;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
+        .result-box { background: #1e1e24; border-left: 4px solid #4CAF50; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
         .result-box.fail { border-left-color: #ff5252; }
         .result-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #fff; }
         .result-detail { font-size: 14px; color: #ccc; line-height: 1.8; }
         .result-detail span.slot-title { color: #ffd54f; font-weight: bold; margin-right: 5px; }
         .result-detail span.equip-info { color: #81c784; }
-        .result-detail span.skill-tag { 
-            background: #333; 
-            padding: 3px 8px; 
-            border-radius: 4px; 
-            margin: 2px 4px 2px 0; 
-            font-size: 12px;
-            display: inline-block;
-            white-space: nowrap;
-        }
+        .result-detail span.skill-tag { background: #333; padding: 3px 8px; border-radius: 4px; margin: 2px 4px 2px 0; font-size: 12px; display: inline-block; white-space: nowrap; }
 
-        /* 方案标识大字 */
         .scheme-badge {
-            display: inline-block;
-            background: #1976d2;
-            color: white;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 15px;
+            display: inline-block; background: #1976d2; color: white; padding: 6px 15px;
+            border-radius: 20px; font-weight: bold; font-size: 15px; margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(25, 118, 210, 0.4);
         }
         
-        .suggestion-box {
-            background: #2a2215;
-            border: 1px dashed #ff9800;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .suggestion-title {
-            color: #ff9800;
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .suggestion-item {
-            background: rgba(0,0,0,0.2);
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-left: 3px solid #ff9800;
-        }
+        .suggestion-box { background: #2a2215; border: 1px dashed #ff9800; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+        .suggestion-title { color: #ff9800; font-weight: bold; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
+        .suggestion-item { background: rgba(0,0,0,0.2); border-radius: 4px; padding: 10px; margin-bottom: 10px; border-left: 3px solid #ff9800; }
         .suggestion-item:last-child { margin-bottom: 0; }
         .suggestion-item-title { color: #ffb74d; font-weight: bold; margin-bottom: 5px; }
-        .suggestion-text {
-            color: #ffcc80;
-            font-size: 14px;
-            line-height: 1.6;
-        }
+        .suggestion-text { color: #ffcc80; font-size: 14px; line-height: 1.6; }
         .suggestion-text strong { color: #fff; }
-        .tag-add { 
-            color: #4CAF50; 
-            font-weight: bold; 
-            background: rgba(76, 175, 80, 0.2); 
-            padding: 2px 6px; 
-            border-radius: 4px;
-            display: inline-block;
-            margin: 2px 0;
-        }
+        .tag-add { color: #4CAF50; font-weight: bold; background: rgba(76, 175, 80, 0.2); padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 2px 0; }
+
+        /* --- 方案选择器 --- */
+        .scheme-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .scheme-card { background: #1e1e24; border: 1px solid #3a3a45; border-radius: 6px; padding: 10px 12px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 6px; }
+        .scheme-card:hover { background: #252530; }
+        .scheme-card.active { border-color: #1976d2; background: rgba(25, 118, 210, 0.1); box-shadow: 0 0 10px rgba(25, 118, 210, 0.2); }
+        .scheme-card-header { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: #fff; }
+        .scheme-card-header input[type="checkbox"] { accent-color: #1976d2; width: 16px; height: 16px; cursor: pointer; }
+        .scheme-card-desc { font-size: 12px; color: #aaa; line-height: 1.4; padding-left: 24px; }
+        .scheme-card.active .scheme-card-desc { color: #ccc; }
+
+        .custom-config-btn { grid-column: span 2; background: #333; color: #fff; border: 1px dashed #666; border-radius: 6px; padding: 8px; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .custom-config-btn:hover { background: #444; border-color: #888; }
+
+        /* --- 目标看板 --- */
+        .goal-board { background: #1e1e24; border: 1px solid #3a3a45; border-radius: 6px; padding: 12px; margin-bottom: 20px; }
+        .goal-title { font-size: 14px; color: #aaa; margin-bottom: 10px; }
+        .goal-group { margin-bottom: 12px; }
+        .goal-group:last-child { margin-bottom: 0; }
+        .goal-group-label { font-size: 13px; color: #fff; margin-bottom: 8px; border-left: 3px solid #777; padding-left: 6px; }
+        .goal-group.core .goal-group-label { border-left-color: #4a7ba6; color: #8ab4f8; }
+        .goal-group.subcore .goal-group-label { border-left-color: #8a5a99; color: #d8b4e2; }
+        .goal-group.holo .goal-group-label { border-left-color: #a6643e; color: #fca86b; }
+
+        .goal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .goal-tag { font-size: 12px; padding: 4px 8px; border-radius: 4px; background: #333; border: 1px solid #555; white-space: nowrap; }
+        .tag-core { color: #8ab4f8; border-color: #4a7ba6; background: rgba(74, 123, 166, 0.1); }
+        .tag-sub { color: #d8b4e2; border-color: #8a5a99; background: rgba(138, 90, 153, 0.1); }
+        .tag-holo { color: #fca86b; border-color: #a6643e; background: rgba(166, 100, 62, 0.1); }
+
+        /* --- 自定义方案弹窗 --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: #2b2b36; padding: 20px; border-radius: 8px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #444; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        .modal-title { font-size: 18px; font-weight: bold; color: #fff; }
+        .modal-close { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
+        
+        .custom-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .custom-item { flex: 1 1 calc(50% - 10px); min-width: 200px; display: flex; justify-content: space-between; align-items: center; background: #1e1e24; padding: 8px 12px; border-radius: 4px; font-size: 14px; gap: 10px; }
+        .custom-item > span { word-break: break-word; line-height: 1.3; }
+        .custom-input { width: 60px; flex-shrink: 0; padding: 4px; background: #333; border: 1px solid #555; color: #fff; text-align: center; border-radius: 4px; font-size: 14px; }
+        .custom-input:focus { border-color: #4CAF50; outline: none; }
+        
+        .custom-counter { font-size: 14px; color: #aaa; margin-bottom: 15px; text-align: right; }
+        .custom-counter span { font-weight: bold; font-size: 16px; }
+
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-save { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover:not(:disabled) { background: #45a049; }
+        .btn-save:disabled { background: #555; color: #888; cursor: not-allowed; }
+        .btn-cancel { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .btn-cancel:hover { background: #555; }
     </style>
 </head>
 <body>
@@ -386,9 +481,49 @@
         
         <div class="info-tip">
             💡 <strong>操作提示：</strong><br>
-            1. 点击 <strong>#序号</strong> 设为 <strong>🔒 必选锁定</strong>。<br>
-            2. 使用右侧的 <strong>↑ / ↓</strong> 按钮调整装备顺序。<br>
-            3. 灰色“可弃用”装备悬停看原因，点击 ✖ 安全清理。
+            1. 选择部位 -> 点击词条标签填入暂存槽。<br>
+            2. 点击下方已有装备的槽位，可直接用标签进行修改。
+        </div>
+
+        <!-- 快速录入区 -->
+        <div class="quick-entry-box">
+            <div class="quick-section-title">选择装备部位：</div>
+            <div class="slot-buttons-container" id="quick-slot-buttons">
+                <!-- JS动态生成 -->
+            </div>
+            
+            <div class="quick-section-title" style="margin-top: 5px;">待添加词条：</div>
+            <div class="quick-entry-row">
+                <div class="quick-slots">
+                    <div class="quick-slot" id="quick-slot-0" onclick="activateQuickSlot(0)"><span class="slot-empty">空</span></div>
+                    <div class="quick-slot" id="quick-slot-1" onclick="activateQuickSlot(1)"><span class="slot-empty">空</span></div>
+                    <div class="quick-slot" id="quick-slot-2" onclick="activateQuickSlot(2)"><span class="slot-empty">空</span></div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn clear-quick-btn" onclick="clearQuickEntry()">🗑️ 清空暂存</button>
+                    <button class="action-btn add-quick-btn" onclick="addQuickEquip()">➕ 添加该装备</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 词条标签池 -->
+        <div class="tag-pool">
+            <div class="tag-pool-title">
+                <span>🎯 点击词条快速填入选中的槽位</span>
+                <span class="skill-tag clear" onclick="clearActiveSlot()">清空当前选中槽位</span>
+            </div>
+            <div class="tag-group">
+                <div class="tag-group-label">🌟 核心词条</div>
+                <div class="tag-list" id="pool-core"></div>
+            </div>
+            <div class="tag-group">
+                <div class="tag-group-label">🔮 次核心词条</div>
+                <div class="tag-list" id="pool-sub"></div>
+            </div>
+            <div class="tag-group">
+                <div class="tag-group-label">✨ 全息词条</div>
+                <div class="tag-list" id="pool-holo"></div>
+            </div>
         </div>
 
         <div id="inventoryContainer"></div>
@@ -398,19 +533,52 @@
     <div class="panel">
         <h2>🧮 计算结果</h2>
         
+        <!-- 目标方案多选卡片 -->
+        <div class="scheme-selector" id="schemeSelector">
+            <label class="scheme-card" id="card-A">
+                <div class="scheme-card-header">
+                    <input type="checkbox" id="chk-A" onchange="updateActiveSchemes()"> 🌟 方案A：次核心路线
+                </div>
+                <div class="scheme-card-desc">5个核心词条 x3 + 任选1种次核心词条 x3</div>
+            </label>
+
+            <label class="scheme-card" id="card-B">
+                <div class="scheme-card-header">
+                    <input type="checkbox" id="chk-B" onchange="updateActiveSchemes()"> ✨ 方案B：全息路线
+                </div>
+                <div class="scheme-card-desc">5个核心词条 x3 + 任意3种不同全息词条 x1</div>
+            </label>
+
+            <label class="scheme-card" id="card-C">
+                <div class="scheme-card-header">
+                    <input type="checkbox" id="chk-C" onchange="updateActiveSchemes()"> 📜 方案C：初版路线
+                </div>
+                <div class="scheme-card-desc">4个老核心 x3 + 爆伤x1 + 所有5种全息 x1</div>
+            </label>
+
+            <label class="scheme-card" id="card-Custom" style="display:none;">
+                <div class="scheme-card-header">
+                    <input type="checkbox" id="chk-Custom" onchange="updateActiveSchemes()"> ⚙️ 自定义方案
+                </div>
+                <div class="scheme-card-desc" id="custom-desc-text">点击下方按钮配置</div>
+            </label>
+            
+            <button class="custom-config-btn" onclick="openCustomModal()">⚙️ 配置自定义方案</button>
+        </div>
+
         <!-- 目标看板 -->
         <div class="goal-board">
-            <div class="goal-title">🎯 毕业目标方案 (新方案A/B 具有高收益优先权)</div>
+            <div class="goal-title">🎯 包含所有可能词条的目标概览</div>
             <div class="goal-group core">
-                <div class="goal-group-label">🌟 核心词条 (5种，各需 3 个)</div>
+                <div class="goal-group-label">🌟 核心词条</div>
                 <div class="goal-tags" id="goalCore"></div>
             </div>
             <div class="goal-group subcore">
-                <div class="goal-group-label">🔮 次核心词条 (方案A专用: 任选1种凑3个)</div>
+                <div class="goal-group-label">🔮 次核心词条</div>
                 <div class="goal-tags" id="goalSub"></div>
             </div>
             <div class="goal-group holo">
-                <div class="goal-group-label">✨ 全息词条 (方案B: 任选3种各1个 / 方案C: 所有全息各1个)</div>
+                <div class="goal-group-label">✨ 全息词条</div>
                 <div class="goal-tags" id="goalHolo"></div>
             </div>
         </div>
@@ -442,11 +610,31 @@
     </div>
 </div>
 
+<!-- 自定义方案弹窗 -->
+<div class="modal-overlay" id="customModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">⚙️ 配置自定义方案</div>
+            <button class="modal-close" onclick="closeCustomModal()">×</button>
+        </div>
+        <div style="font-size: 13px; color: #aaa; margin-bottom: 15px;">
+            单条词条最多需求 3 个，总需求词条数最多 18 个。
+        </div>
+        <div class="custom-grid" id="customGrid"></div>
+        <div class="custom-counter">
+            当前总词条数：<span id="customTotal" style="color: #4CAF50;">0</span> / 18
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeCustomModal()">取消</button>
+            <button class="btn-save" id="saveCustomBtn" onclick="saveCustomScheme()">保存并启用</button>
+        </div>
+    </div>
+</div>
+
 <script>
     function generateWatermark() {
         const canvas = document.createElement('canvas');
-        canvas.width = 400;
-        canvas.height = 300;
+        canvas.width = 400; canvas.height = 300;
         const ctx = canvas.getContext('2d');
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(-25 * Math.PI / 180); 
@@ -462,80 +650,449 @@
 
     const slotNames = ["帽子", "上衣", "下装", "披风", "手套", "鞋子"];
     
-    // 词条分类定义
     const CORE_SKILLS = ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT", "Critical Damage"];
     const SUB_SKILLS = ["Damage", "Boss Damage"];
     const HOLO_SKILLS = ["Magician Attack", "Pirate Attack", "Thief Attack", "Warrior Attack", "Bowman Attack"];
+    const allSkills = [...CORE_SKILLS, ...SUB_SKILLS, ...HOLO_SKILLS];
     
-    // 权重设定
     const W_CORE = 100;
     const W_SUB = 30;
     const W_HOLO = 10;
 
-    const allSkills = [...CORE_SKILLS, ...SUB_SKILLS, ...HOLO_SKILLS];
-    
     let inventoryData = JSON.parse(localStorage.getItem('bis_inventory_v1')) || {};
     let lockedEquips = JSON.parse(localStorage.getItem('bis_locked_v1')) || {}; 
     let trashableEquips = new Set(); 
+    let activeSchemes = JSON.parse(localStorage.getItem('bis_active_schemes')) || ['A', 'B'];
+    let customSchemeData = JSON.parse(localStorage.getItem('bis_custom_scheme')) || {};
+
+    // 快速录入区的状态
+    let currentQuickSlot = "帽子";
+    let quickEntryData = ["", "", ""];
+    
+    // 当前激活的槽位 { type: 'quick'|'existing', posIndex, slot, equipIndex }
+    let activeSlotInfo = null; 
 
     function init() {
-        generateWatermark();
-        renderGoalBoard(); 
         slotNames.forEach(slot => {
             if (!inventoryData[slot] || inventoryData[slot].length === 0) {
                 inventoryData[slot] = [["", "", ""]];
             }
         });
+        
+        generateWatermark();
+        renderGoalBoard(); 
+        renderQuickSlotButtons();
+        renderTagPool();
+        initSchemeCheckboxes();
+        renderQuickSlots();
         renderInventory();
+    }
+
+    // 渲染部位按钮
+    function renderQuickSlotButtons() {
+        const container = document.getElementById('quick-slot-buttons');
+        container.innerHTML = '';
+        slotNames.forEach(slot => {
+            const btn = document.createElement('button');
+            btn.className = `slot-btn ${slot === currentQuickSlot ? 'active' : ''}`;
+            btn.textContent = slot;
+            btn.onclick = () => {
+                currentQuickSlot = slot;
+                renderQuickSlotButtons();
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    // 渲染标签池（包含去重禁用逻辑）
+    function renderTagPool() {
+        const coreBox = document.getElementById('pool-core');
+        const subBox = document.getElementById('pool-sub');
+        const holoBox = document.getElementById('pool-holo');
+        coreBox.innerHTML = ''; subBox.innerHTML = ''; holoBox.innerHTML = '';
+
+        // 获取当前暂存区已经有的词条用于去重
+        let disabledSkills = [];
+        if (activeSlotInfo && activeSlotInfo.type === 'quick') {
+            disabledSkills = quickEntryData.filter(s => s !== "");
+        }
+
+        const createTag = (skill, typeClass) => {
+            const isDisabled = disabledSkills.includes(skill);
+            const tag = document.createElement('div');
+            tag.className = `skill-tag ${typeClass} ${isDisabled ? 'disabled' : ''}`;
+            tag.textContent = skill;
+            if (!isDisabled) {
+                tag.onclick = () => fillActiveSlot(skill);
+            }
+            return tag;
+        };
+
+        CORE_SKILLS.forEach(skill => coreBox.appendChild(createTag(skill, 'core')));
+        SUB_SKILLS.forEach(skill => subBox.appendChild(createTag(skill, 'sub')));
+        HOLO_SKILLS.forEach(skill => holoBox.appendChild(createTag(skill, 'holo')));
+    }
+
+    // 渲染快速录入区的暂存槽
+    function renderQuickSlots() {
+        for (let i = 0; i < 3; i++) {
+            const slotEl = document.getElementById(`quick-slot-${i}`);
+            const val = quickEntryData[i];
+            let classStr = 'quick-slot';
+            
+            if (val) {
+                if (CORE_SKILLS.includes(val)) classStr += ' filled core';
+                else if (SUB_SKILLS.includes(val)) classStr += ' filled sub';
+                else if (HOLO_SKILLS.includes(val)) classStr += ' filled holo';
+            }
+            
+            if (activeSlotInfo && activeSlotInfo.type === 'quick' && activeSlotInfo.posIndex === i) {
+                classStr += ' active';
+            }
+
+            slotEl.className = classStr;
+            slotEl.innerHTML = val 
+                ? `<span class="slot-text">${val}</span><span class="clear-slot-btn" onclick="clearQuickSlot(${i}, event)">×</span>`
+                : `<span class="slot-empty">空</span>`;
+        }
+    }
+
+    function activateQuickSlot(posIndex) {
+        if (activeSlotInfo && activeSlotInfo.type === 'quick' && activeSlotInfo.posIndex === posIndex) {
+            activeSlotInfo = null; 
+        } else {
+            activeSlotInfo = { type: 'quick', posIndex: posIndex };
+        }
+        renderQuickSlots();
+        renderTagPool(); 
+        renderInventory();
+    }
+
+    function clearQuickSlot(posIndex, event) {
+        if (event) event.stopPropagation();
+        quickEntryData[posIndex] = "";
+        activeSlotInfo = { type: 'quick', posIndex: posIndex };
+        renderQuickSlots();
+        renderTagPool();
+        renderInventory();
+    }
+
+    function clearQuickEntry() {
+        quickEntryData = ["", "", ""];
+        activeSlotInfo = { type: 'quick', posIndex: 0 };
+        renderQuickSlots();
+        renderTagPool();
+        renderInventory();
+    }
+
+    // 快速添加整件装备
+    function addQuickEquip() {
+        const targetSlot = currentQuickSlot;
+        const hasSkill = quickEntryData.some(s => s !== "");
+        
+        if (!hasSkill) {
+            alert("请先点击下方词条，填入至少一个词条！");
+            return;
+        }
+
+        if (inventoryData[targetSlot].length >= 10) {
+            alert(`【${targetSlot}】部位装备已满10件，请先清理！`);
+            return;
+        }
+
+        let newEquip = [...quickEntryData];
+        
+        // 核心修复：处理新装备添加的位置
+        if (inventoryData[targetSlot].length === 1 && inventoryData[targetSlot][0].every(s => s === "")) {
+            // 如果该部位只有一件空装备，直接覆盖成为第1件
+            inventoryData[targetSlot][0] = newEquip;
+        } else if (inventoryData[targetSlot].length === 0) {
+            inventoryData[targetSlot].push(newEquip);
+        } else {
+            // 如果该部位已有其他装备，插入到最前面（序号1）
+            inventoryData[targetSlot].unshift(newEquip);
+            // 更新锁定索引
+            if (lockedEquips[targetSlot] !== undefined) {
+                lockedEquips[targetSlot]++;
+            }
+            // 更新当前激活的槽位索引
+            if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === targetSlot) {
+                activeSlotInfo.equipIndex++;
+            }
+        }
+        
+        // 清空暂存区
+        quickEntryData = ["", "", ""];
+        activeSlotInfo = { type: 'quick', posIndex: 0 };
+        
+        saveData();
+        renderQuickSlots();
+        renderTagPool();
+        renderInventory();
+        
+        clearHighlights(); 
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('emptyTip').style.display = 'block';
+        trashableEquips.clear();
+    }
+
+    // 点击标签填入
+    function fillActiveSlot(skill) {
+        if (!activeSlotInfo) {
+            let next = quickEntryData.findIndex(s => s === "");
+            if (next === -1) next = 0;
+            activeSlotInfo = { type: 'quick', posIndex: next };
+        }
+
+        if (activeSlotInfo.type === 'quick') {
+            if (quickEntryData.includes(skill)) return; 
+            
+            quickEntryData[activeSlotInfo.posIndex] = skill;
+            
+            let next = activeSlotInfo.posIndex + 1;
+            if (next > 2) next = 0;
+            for(let i=0; i<3; i++){
+                let check = (activeSlotInfo.posIndex + 1 + i) % 3;
+                if (!quickEntryData[check]) { next = check; break; }
+            }
+            activeSlotInfo = { type: 'quick', posIndex: next };
+            
+            renderQuickSlots();
+            renderTagPool(); 
+        } 
+        else if (activeSlotInfo.type === 'existing') {
+            const { slot, equipIndex, posIndex } = activeSlotInfo;
+            
+            if (inventoryData[slot][equipIndex].includes(skill) && inventoryData[slot][equipIndex][posIndex] !== skill) {
+                alert("同一件装备不能拥有相同的词条！");
+                return;
+            }
+
+            inventoryData[slot][equipIndex][posIndex] = skill;
+            saveData();
+            
+            let found = false;
+            for (let i = 0; i < 3; i++) {
+                let checkPos = (posIndex + 1 + i) % 3;
+                if (!inventoryData[slot][equipIndex][checkPos]) {
+                    activeSlotInfo = { type: 'existing', slot, equipIndex, posIndex: checkPos };
+                    found = true; break;
+                }
+            }
+            if (!found) activeSlotInfo = null;
+            
+            renderInventory();
+            renderTagPool();
+            if (activeSlotInfo) {
+                document.getElementById(`slot-${slot}-${equipIndex}-${activeSlotInfo.posIndex}`).classList.add('active');
+            }
+        }
+    }
+
+    function clearActiveSlot() {
+        if (!activeSlotInfo) return;
+        
+        if (activeSlotInfo.type === 'quick') {
+            quickEntryData[activeSlotInfo.posIndex] = "";
+            renderQuickSlots();
+            renderTagPool();
+        } else {
+            const { slot, equipIndex, posIndex } = activeSlotInfo;
+            inventoryData[slot][equipIndex][posIndex] = "";
+            saveData();
+            renderInventory();
+            renderTagPool();
+            document.getElementById(`slot-${slot}-${equipIndex}-${posIndex}`).classList.add('active');
+        }
+    }
+
+    function clearSpecificSlot(slot, equipIndex, posIndex, event) {
+        event.stopPropagation(); 
+        inventoryData[slot][equipIndex][posIndex] = "";
+        saveData();
+        activeSlotInfo = { type: 'existing', slot, equipIndex, posIndex };
+        renderQuickSlots(); 
+        renderTagPool();
+        renderInventory();
+        document.getElementById(`slot-${slot}-${equipIndex}-${posIndex}`).classList.add('active');
+    }
+
+    function activateSlot(slot, equipIndex, posIndex, event) {
+        if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === slot && activeSlotInfo.equipIndex === equipIndex && activeSlotInfo.posIndex === posIndex) {
+            activeSlotInfo = null; 
+        } else {
+            activeSlotInfo = { type: 'existing', slot, equipIndex, posIndex };
+        }
+        renderQuickSlots();
+        renderTagPool();
+        renderInventory();
+        
+        if (activeSlotInfo) {
+            document.getElementById(`slot-${slot}-${equipIndex}-${posIndex}`).classList.add('active');
+        }
+    }
+
+    function clearWholeEquip(slot, equipIndex, event) {
+        event.stopPropagation();
+        inventoryData[slot][equipIndex] = ["", "", ""];
+        if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === slot && activeSlotInfo.equipIndex === equipIndex) {
+            activeSlotInfo = null;
+        }
+        saveData();
+        renderInventory();
+        renderTagPool();
     }
 
     function renderGoalBoard() {
         const coreBox = document.getElementById('goalCore');
         const subBox = document.getElementById('goalSub');
         const holoBox = document.getElementById('goalHolo');
+        coreBox.innerHTML = ''; subBox.innerHTML = ''; holoBox.innerHTML = '';
+        CORE_SKILLS.forEach(skill => coreBox.innerHTML += `<span class="goal-tag tag-core">${skill}</span>`);
+        SUB_SKILLS.forEach(skill => subBox.innerHTML += `<span class="goal-tag tag-sub">${skill}</span>`);
+        HOLO_SKILLS.forEach(skill => holoBox.innerHTML += `<span class="goal-tag tag-holo">${skill}</span>`);
+    }
+
+    function initSchemeCheckboxes() {
+        ['A', 'B', 'C', 'Custom'].forEach(s => {
+            const chk = document.getElementById(`chk-${s}`);
+            const card = document.getElementById(`card-${s}`);
+            if (chk && card) {
+                chk.checked = activeSchemes.includes(s);
+                updateCardStyle(card, chk.checked);
+            }
+        });
+        if (Object.keys(customSchemeData).length > 0) {
+            document.getElementById('card-Custom').style.display = 'flex';
+            document.getElementById('chk-Custom').checked = activeSchemes.includes('Custom');
+            updateCardStyle(document.getElementById('card-Custom'), document.getElementById('chk-Custom').checked);
+            updateCustomDesc();
+        }
+    }
+
+    function updateCardStyle(card, isChecked) {
+        if (isChecked) card.classList.add('active');
+        else card.classList.remove('active');
+    }
+
+    function updateCustomDesc() {
+        let desc = [];
+        for (let skill in customSchemeData) desc.push(`${skill} x${customSchemeData[skill]}`);
+        document.getElementById('custom-desc-text').textContent = desc.join(' + ') || '未配置';
+    }
+
+    function updateActiveSchemes() {
+        let selected = [];
+        ['A', 'B', 'C', 'Custom'].forEach(s => {
+            const chk = document.getElementById(`chk-${s}`);
+            const card = document.getElementById(`card-${s}`);
+            if (chk && chk.checked) {
+                selected.push(s);
+                updateCardStyle(card, true);
+            } else if (card) {
+                updateCardStyle(card, false);
+            }
+        });
+
+        if (selected.length === 0) {
+            alert("请至少勾选一个目标方案！");
+            document.getElementById('chk-A').checked = true;
+            updateCardStyle(document.getElementById('card-A'), true);
+            selected = ['A'];
+        }
+
+        activeSchemes = selected;
+        localStorage.setItem('bis_active_schemes', JSON.stringify(activeSchemes));
+        if (document.getElementById('resultArea').style.display !== 'none') calculate(true);
+    }
+
+    function openCustomModal() {
+        const grid = document.getElementById('customGrid');
+        grid.innerHTML = '';
+        allSkills.forEach(skill => {
+            const val = customSchemeData[skill] || 0;
+            grid.innerHTML += `
+                <div class="custom-item">
+                    <span>${skill}</span>
+                    <input type="text" inputmode="numeric" class="custom-input" id="c-input-${btoa(skill)}" value="${val}" oninput="handleCustomInput(this)">
+                </div>
+            `;
+        });
+        calcCustomTotal();
+        document.getElementById('customModal').style.display = 'flex';
+    }
+
+    function closeCustomModal() { document.getElementById('customModal').style.display = 'none'; }
+
+    function handleCustomInput(el) {
+        let val = el.value;
+        if (val === '') { calcCustomTotal(); return; }
+        val = val.replace(/[^0-9]/g, '');
+        if (val === '') val = '0';
+        val = val.replace(/^0+(?!$)/, '');
+        let num = parseInt(val) || 0;
+        if (num > 3) num = 3;
+        el.value = num;
+        calcCustomTotal();
+    }
+
+    function calcCustomTotal() {
+        let total = 0;
+        allSkills.forEach(skill => {
+            let el = document.getElementById(`c-input-${btoa(skill)}`);
+            total += parseInt(el.value) || 0;
+        });
+        const totalEl = document.getElementById('customTotal');
+        const saveBtn = document.getElementById('saveCustomBtn');
+        totalEl.textContent = total;
         
-        CORE_SKILLS.forEach(skill => {
-            const tag = document.createElement('span');
-            tag.className = 'goal-tag tag-core';
-            tag.textContent = `${skill} x3`;
-            coreBox.appendChild(tag);
-        });
+        if (total > 18) {
+            totalEl.style.color = '#ff5252';
+            saveBtn.disabled = true;
+            saveBtn.textContent = '超过18个词条，无法保存';
+        } else if (total === 18) {
+            totalEl.style.color = '#4CAF50';
+            saveBtn.disabled = false;
+            saveBtn.textContent = '保存并启用';
+        } else {
+            totalEl.style.color = '#ffb74d';
+            saveBtn.disabled = false;
+            saveBtn.textContent = '保存并启用';
+        }
+        if (total === 0) saveBtn.disabled = true;
+    }
 
-        SUB_SKILLS.forEach(skill => {
-            const tag = document.createElement('span');
-            tag.className = 'goal-tag tag-sub';
-            tag.textContent = `${skill} x3 (或)`;
-            subBox.appendChild(tag);
+    function saveCustomScheme() {
+        let newData = {}; let total = 0;
+        allSkills.forEach(skill => {
+            const val = parseInt(document.getElementById(`c-input-${btoa(skill)}`).value) || 0;
+            if (val > 0) newData[skill] = val;
+            total += val;
         });
-
-        HOLO_SKILLS.forEach(skill => {
-            const tag = document.createElement('span');
-            tag.className = 'goal-tag tag-holo';
-            tag.textContent = `${skill} x1`;
-            holoBox.appendChild(tag);
-        });
+        if (total === 0 || total > 18) return;
+        customSchemeData = newData;
+        localStorage.setItem('bis_custom_scheme', JSON.stringify(customSchemeData));
+        document.getElementById('card-Custom').style.display = 'flex';
+        document.getElementById('chk-Custom').checked = true;
+        updateCustomDesc();
+        closeCustomModal();
+        updateActiveSchemes(); 
     }
 
     function getTrashReason(slot, index) {
         const equip = inventoryData[slot][index];
         const validSkills = equip.filter(s => s && s !== '');
-        
-        if (validSkills.length === 0) return "这件装备没有录入任何有效词条，可以安全删除。";
-        
+        if (validSkills.length === 0) return "这件装备没有录入任何有效词条。";
         for (let i = 0; i < inventoryData[slot].length; i++) {
             if (i === index) continue;
             const other = inventoryData[slot][i];
             const otherValid = other.filter(s => s && s !== '');
-            if (validSkills.every(s => otherValid.includes(s))) {
-                return `该部位的第 ${i + 1} 件装备完全包含了这件的词条，因此可以被替代。`;
-            }
+            if (validSkills.every(s => otherValid.includes(s))) return `该部位的第 ${i + 1} 件装备完全包含了这件的词条。`;
         }
-
         const fingerprint = validSkills.sort().join('|');
         const dupCount = inventoryData[slot].filter(eq => eq.filter(s=>s).sort().join('|') === fingerprint).length;
-        if (dupCount > 1) return "该部位存在词条完全相同的装备，保留其中一件即可，这件是多余的。";
-
-        return "在当前能达到最高评分的所有组合中，这件装备均未被选中，说明它对凑齐目标词条没有帮助。";
+        if (dupCount > 1) return "该部位存在词条完全相同的装备，这件是多余的。";
+        return "在最优组合中未用到，说明对凑齐目标帮助不大。";
     }
 
     function renderInventory() {
@@ -548,10 +1105,7 @@
             
             const header = document.createElement('div');
             header.className = 'slot-header';
-            header.innerHTML = `
-                <span class="slot-name">${slot}</span>
-                <button class="add-btn" onclick="addEquip('${slot}')">+ 添加装备</button>
-            `;
+            header.innerHTML = `<span class="slot-name">${slot}</span><button class="add-btn" onclick="addEquip('${slot}')">+ 空装备</button>`;
             groupDiv.appendChild(header);
 
             const fingerprintCounts = {};
@@ -576,60 +1130,57 @@
                 if (isDuplicate) card.classList.add('duplicate');
                 if (isTrash) card.classList.add('can-trash');
                 if (isLocked) card.classList.add('locked');
-
                 if (isTrash && !isLocked) card.title = getTrashReason(slot, index);
 
                 let indexHTML = `<div class="equip-index" onclick="toggleLock('${slot}', ${index})" title="点击${isLocked ? '取消必选' : '设为必选'}">
                     ${isLocked ? '🔒' : '#'}${index + 1}
                 </div>`;
 
-                let selectsHTML = indexHTML;
+                let slotsHTML = `<div class="skill-slots-container">`;
                 for (let i = 0; i < 3; i++) {
-                    let opts = '<option value="" style="background-color: #1e1e24; color: #888;">- 无 -</option>';
-                    allSkills.forEach(skill => {
-                        // 柔和版配色：下拉选项
-                        let optStyle = '';
-                        if (CORE_SKILLS.includes(skill)) {
-                            optStyle = 'background-color: #1a2634; color: #8ab4f8;'; 
-                        } else if (SUB_SKILLS.includes(skill)) {
-                            optStyle = 'background-color: #2e1b3d; color: #d8b4e2;'; 
-                        } else {
-                            optStyle = 'background-color: #332014; color: #fca86b;'; 
-                        }
-                        opts += `<option value="${skill}" style="${optStyle}" ${equip[i] === skill ? 'selected' : ''}>${skill}</option>`;
-                    });
+                    const val = equip[i] || '';
+                    let classStr = 'skill-slot';
+                    let textContent = '';
                     
-                    // 柔和版配色：选中框本体
-                    const currentVal = equip[i] || '';
-                    let selectStyle = '';
-                    if (currentVal) {
-                        if (CORE_SKILLS.includes(currentVal)) {
-                            selectStyle = 'border-color: #4a7ba6; color: #8ab4f8; background-color: #1a2634;';
-                        } else if (SUB_SKILLS.includes(currentVal)) {
-                            selectStyle = 'border-color: #8a5a99; color: #d8b4e2; background-color: #2e1b3d;';
-                        } else {
-                            selectStyle = 'border-color: #a6643e; color: #fca86b; background-color: #332014;';
-                        }
+                    if (val) {
+                        if (CORE_SKILLS.includes(val)) classStr += ' filled core';
+                        else if (SUB_SKILLS.includes(val)) classStr += ' filled sub';
+                        else if (HOLO_SKILLS.includes(val)) classStr += ' filled holo';
+                        textContent = `<span class="slot-text">${val}</span>`;
+                    } else {
+                        textContent = `<span class="slot-empty">空</span>`;
                     }
                     
-                    selectsHTML += `<select onchange="updateEquip('${slot}', ${index}, ${i}, this.value)" style="${selectStyle}">${opts}</select>`;
+                    if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === slot && activeSlotInfo.equipIndex === index && activeSlotInfo.posIndex === i) {
+                        classStr += ' active';
+                    }
+
+                    slotsHTML += `
+                        <div class="${classStr}" id="slot-${slot}-${index}-${i}" onclick="activateSlot('${slot}', ${index}, ${i}, event)">
+                            ${textContent}
+                            ${val ? `<span class="clear-slot-btn" onclick="clearSpecificSlot('${slot}', ${index}, ${i}, event)">×</span>` : ''}
+                        </div>
+                    `;
                 }
+                slotsHTML += `</div>`;
+
+                let clearEquipHTML = `<button class="sort-btn" style="width:24px; height:30px; background:#444;" onclick="clearWholeEquip('${slot}', ${index}, event)" title="清空这件">🧹</button>`;
 
                 const isFirst = index === 0;
                 const isLast = index === inventoryData[slot].length - 1;
-                selectsHTML += `
+                let sortHTML = `
                     <div class="sort-controls">
                         <button class="sort-btn" onclick="moveEquip('${slot}', ${index}, -1)" ${isFirst ? 'disabled' : ''} title="上移">↑</button>
                         <button class="sort-btn" onclick="moveEquip('${slot}', ${index}, 1)" ${isLast ? 'disabled' : ''} title="下移">↓</button>
                     </div>
                 `;
 
-                selectsHTML += `<button class="remove-btn" onclick="removeEquip('${slot}', ${index})">✖</button>`;
+                let removeHTML = `<button class="remove-btn" onclick="removeEquip('${slot}', ${index})">✖</button>`;
                 
-                if (isDuplicate) selectsHTML += `<div class="badge duplicate-badge">重复</div>`;
-                if (isTrash && !isLocked) selectsHTML += `<div class="badge trash-badge">可弃用</div>`;
+                if (isDuplicate) removeHTML += `<div class="badge duplicate-badge">重复</div>`;
+                if (isTrash && !isLocked) removeHTML += `<div class="badge trash-badge">可弃用</div>`;
 
-                card.innerHTML = selectsHTML;
+                card.innerHTML = indexHTML + slotsHTML + clearEquipHTML + sortHTML + removeHTML;
                 groupDiv.appendChild(card);
             });
 
@@ -658,19 +1209,15 @@
     function toggleLock(slot, index) {
         if (lockedEquips[slot] === index) delete lockedEquips[slot]; 
         else lockedEquips[slot] = index; 
-        
         trashableEquips.clear();
         clearHighlights(); 
         document.getElementById('resultArea').style.display = 'none';
         document.getElementById('emptyTip').style.display = 'block';
-        
         saveData();
         renderInventory();
     }
 
-    function clearHighlights() {
-        document.querySelectorAll('.equip-card').forEach(el => el.classList.remove('selected'));
-    }
+    function clearHighlights() { document.querySelectorAll('.equip-card').forEach(el => el.classList.remove('selected')); }
 
     function addEquip(slot) {
         if (inventoryData[slot].length >= 10) return alert("一个部位最多添加10件装备！");
@@ -696,25 +1243,18 @@
         } else {
             inventoryData[slot].splice(index, 1);
         }
+        
+        if (activeSlotInfo && activeSlotInfo.type === 'existing' && activeSlotInfo.slot === slot && activeSlotInfo.equipIndex === index) activeSlotInfo = null;
 
         if (isTrash) calculate(true); 
         else {
             trashableEquips.clear();
             renderInventory();
+            renderTagPool();
             clearHighlights(); 
             document.getElementById('resultArea').style.display = 'none';
             document.getElementById('emptyTip').style.display = 'block';
         }
-    }
-
-    function updateEquip(slot, equipIndex, posIndex, value) {
-        inventoryData[slot][equipIndex][posIndex] = value;
-        trashableEquips.clear(); 
-        saveData();
-        renderInventory(); 
-        clearHighlights(); 
-        document.getElementById('resultArea').style.display = 'none';
-        document.getElementById('emptyTip').style.display = 'block';
     }
 
     function saveData() {
@@ -736,6 +1276,7 @@
                 alert(`【${slot}】部位没有任何装备！`); return;
             }
         }
+        if (activeSchemes.length === 0) { alert("请至少勾选一个目标方案！"); return; }
 
         if (!isSilent) {
             clearHighlights(); 
@@ -751,46 +1292,64 @@
         }
     }
 
-    // --- 评分核心逻辑（增加了新方案收益优先机制） ---
-    function evaluateSchemes(counts) {
-        // 方案A：5核心*3 + 1次核心*3
-        let missA = 0;
-        CORE_SKILLS.forEach(s => missA += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
+    function calcSchemeA(counts) {
+        let miss = 0;
+        CORE_SKILLS.forEach(s => miss += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
         let subMiss1 = Math.max(0, 3 - (counts["Damage"]||0));
         let subMiss2 = Math.max(0, 3 - (counts["Boss Damage"]||0));
-        missA += Math.min(subMiss1, subMiss2) * W_SUB; 
+        miss += Math.min(subMiss1, subMiss2) * W_SUB; 
+        return miss;
+    }
 
-        // 方案B：5核心*3 + 任意3个不同全息*1
-        let missB = 0;
-        CORE_SKILLS.forEach(s => missB += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
+    function calcSchemeB(counts) {
+        let miss = 0;
+        CORE_SKILLS.forEach(s => miss += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
         let holoCounts = HOLO_SKILLS.map(h => counts[h]||0).sort((a,b) => b-a); 
         let holoMiss = 0;
-        for(let i=0; i<3; i++) {
-            if(holoCounts[i] === 0) holoMiss++; 
-        }
-        missB += holoMiss * W_HOLO;
+        for(let i=0; i<3; i++) if(holoCounts[i] === 0) holoMiss++; 
+        miss += holoMiss * W_HOLO;
+        return miss;
+    }
 
-        // 方案C：4老核心*3 + 5全息*1 + 1爆伤*1
-        let missC = 0;
+    function calcSchemeC(counts) {
+        let miss = 0;
         ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => {
-            missC += Math.max(0, 3 - (counts[s]||0)) * W_CORE;
+            miss += Math.max(0, 3 - (counts[s]||0)) * W_CORE;
         });
-        missC += Math.max(0, 1 - (counts["Critical Damage"]||0)) * W_CORE; 
-        HOLO_SKILLS.forEach(s => missC += Math.max(0, 1 - (counts[s]||0)) * W_HOLO);
+        miss += Math.max(0, 1 - (counts["Critical Damage"]||0)) * W_CORE; 
+        HOLO_SKILLS.forEach(s => miss += Math.max(0, 1 - (counts[s]||0)) * W_HOLO);
+        return miss;
+    }
 
-        // 🌟 核心改动：给方案C加上惩罚分（50分），确保在同等或微小差距下，优先选择收益更高的方案A或B
-        // 50分的概念：相当于5个全息词条的差距，或接近2个次核心词条的差距。
-        // 只有当你仓库里的装备真的极其适合方案C（比如完全没有次核心，且老核心极多）时，C才会胜出。
-        let PENALTY_C = 50; 
-        let finalScoreC = missC + PENALTY_C;
+    function calcSchemeCustom(counts) {
+        let miss = 0;
+        for (let skill in customSchemeData) {
+            let req = customSchemeData[skill];
+            let cur = counts[skill] || 0;
+            if (cur < req) {
+                let weight = CORE_SKILLS.includes(skill) ? W_CORE : (SUB_SKILLS.includes(skill) ? W_SUB : W_HOLO);
+                miss += (req - cur) * weight;
+            }
+        }
+        return miss;
+    }
 
-        let bestScore = Math.min(missA, missB, finalScoreC);
+    function evaluateSchemes(counts) {
+        let bestScore = Infinity;
         let bestScheme = '';
-        if (bestScore === missA) bestScheme = 'A';
-        else if (bestScore === missB) bestScheme = 'B';
-        else bestScheme = 'C';
+        let scores = {};
+        if (activeSchemes.includes('A')) scores['A'] = calcSchemeA(counts);
+        if (activeSchemes.includes('B')) scores['B'] = calcSchemeB(counts);
+        if (activeSchemes.includes('C')) scores['C'] = calcSchemeC(counts) + (activeSchemes.length > 1 ? 50 : 0); 
+        if (activeSchemes.includes('Custom')) scores['Custom'] = calcSchemeCustom(counts);
 
-        return { missA, missB, missC, bestScore, bestScheme };
+        for (let scheme in scores) {
+            if (scores[scheme] < bestScore) {
+                bestScore = scores[scheme];
+                bestScheme = scheme;
+            }
+        }
+        return { bestScore, bestScheme };
     }
 
     function runCoreCalc() {
@@ -831,7 +1390,6 @@
 
             inventoryData[slot].forEach((equip, idx) => {
                 if (lockedIndex !== undefined && lockedIndex !== idx) return; 
-
                 let equipCopy = [...equip];
                 equipCopy._originIndex = idx + 1;
                 equipCopy._slotName = slot; 
@@ -857,36 +1415,43 @@
         displayResult(bestCombo);
     }
 
+    function getReqDict(scheme, counts) {
+        let reqDict = {};
+        allSkills.forEach(s => reqDict[s] = 0); 
+        if (scheme === 'A') {
+            CORE_SKILLS.forEach(s => reqDict[s] = 3);
+            let sub1 = counts["Damage"] || 0;
+            let sub2 = counts["Boss Damage"] || 0;
+            if (sub1 >= sub2) reqDict["Damage"] = 3; else reqDict["Boss Damage"] = 3;
+        } else if (scheme === 'B') {
+            CORE_SKILLS.forEach(s => reqDict[s] = 3);
+            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (counts[b]||0) - (counts[a]||0));
+            for(let i=0; i<3; i++) reqDict[sortedHolo[i]] = 1;
+        } else if (scheme === 'C') {
+            ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => reqDict[s] = 3);
+            reqDict["Critical Damage"] = 1;
+            HOLO_SKILLS.forEach(s => reqDict[s] = 1);
+        } else if (scheme === 'Custom') {
+            for (let skill in customSchemeData) reqDict[skill] = customSchemeData[skill];
+        }
+        return reqDict;
+    }
+
     function displayResult(result) {
         const comboBox = document.getElementById('comboShow');
         const suggestionArea = document.getElementById('suggestionArea');
         const schemeBadge = document.getElementById('schemeBadge');
         
-        // 显示当前方案大字
-        const schemeNames = { 'A': '🌟 方案A：次核心路线', 'B': '✨ 方案B：全息路线', 'C': '📜 方案C：初版兼容路线' };
+        const schemeNames = { 'A': '🌟 方案A：次核心路线', 'B': '✨ 方案B：全息路线', 'C': '📜 方案C：初版兼容路线', 'Custom': '⚙️ 自定义路线' };
         schemeBadge.textContent = `当前最优规划：【${schemeNames[result.scheme]}】`;
         schemeBadge.style.display = 'inline-block';
-        
-        // 如果选择了C，但差距很小，可以加个提示（可选，这里不加了以免干扰）
 
         let titleText = '';
         let boxClass = 'result-box ';
         
-        // 算总缺少词条数用于展示（不按权重，只按人头数）
+        let reqDict = getReqDict(result.scheme, result.counts);
         let missingCounts = 0;
-        if (result.scheme === 'A') {
-            CORE_SKILLS.forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
-            let subM = Math.min(Math.max(0, 3 - (result.counts["Damage"]||0)), Math.max(0, 3 - (result.counts["Boss Damage"]||0)));
-            missingCounts += subM;
-        } else if (result.scheme === 'B') {
-            CORE_SKILLS.forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
-            let holoCounts = HOLO_SKILLS.map(h => result.counts[h]||0).sort((a,b)=>b-a);
-            for(let i=0; i<3; i++) if(holoCounts[i]===0) missingCounts++;
-        } else {
-            ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => missingCounts += Math.max(0, 3 - (result.counts[s]||0)));
-            missingCounts += Math.max(0, 1 - (result.counts["Critical Damage"]||0));
-            HOLO_SKILLS.forEach(s => missingCounts += Math.max(0, 1 - (result.counts[s]||0)));
-        }
+        for(let s in reqDict) missingCounts += Math.max(0, reqDict[s] - (result.counts[s]||0));
 
         if (missingCounts === 0) {
             titleText = `🎉 完美毕业！该组合已满足方案${result.scheme}的全部需求！`;
@@ -910,36 +1475,23 @@
                 ? validSkills.map(s => `<span class="skill-tag">${s}</span>`).join('') 
                 : '<span class="skill-tag" style="color:#888">无有效词条</span>';
             
-            detailHTML += `<div style="margin-bottom: 6px;">
-                <span class="slot-title">${slot}</span> 
-                <span class="equip-info">选择第 ${originIndex} 件</span>：
-                ${skillsHTML}
-            </div>`;
+            detailHTML += `<div style="margin-bottom: 6px;"><span class="slot-title">${slot}</span> <span class="equip-info">选择第 ${originIndex} 件</span>：${skillsHTML}</div>`;
         });
         detailHTML += `</div>`;
         
         comboBox.className = boxClass;
         comboBox.innerHTML = detailHTML;
 
-        // 替换建议 (基于当前最优方案)
         if (missingCounts > 0) {
-            let suggestions = generateReplacements(result, result.scheme);
+            let suggestions = generateReplacements(result, result.scheme, reqDict);
             if (suggestions.length > 0) {
-                let suggestionsHTML = `
-                    <div class="suggestion-box">
-                        <div class="suggestion-title">💡 方案${result.scheme} 毕业路线推荐 (缺 ${missingCounts} 个词条)</div>
-                `;
+                let suggestionsHTML = `<div class="suggestion-box"><div class="suggestion-title">💡 方案${result.scheme} 毕业路线推荐 (缺 ${missingCounts} 个词条)</div>`;
                 suggestions.forEach((sug, idx) => {
                     suggestionsHTML += `
                         <div class="suggestion-item">
                             <div class="suggestion-item-title">路线 ${idx + 1}</div>
-                            <div class="suggestion-text">
-                                替换 <strong>【${sug.slotName}】的第 ${sug.originIndex} 件</strong> 
-                                (原词条: ${sug.oldSkillsText})<br>
-                                你需要刷出一件带有 <span class="tag-add">[${sug.neededSkills.join('] [')}]</span> 的新【${sug.slotName}】。
-                            </div>
-                        </div>
-                    `;
+                            <div class="suggestion-text">替换 <strong>【${sug.slotName}】的第 ${sug.originIndex} 件</strong> (原词条: ${sug.oldSkillsText})<br>你需要刷出一件带有 <span class="tag-add">[${sug.neededSkills.join('] [')}]</span> 的新【${sug.slotName}】。</div>
+                        </div>`;
                 });
                 suggestionsHTML += `</div>`;
                 suggestionArea.innerHTML = suggestionsHTML;
@@ -950,113 +1502,48 @@
             suggestionArea.innerHTML = '';
         }
 
-        // 统计表 (基于当前方案需求)
         const tbody = document.getElementById('statsBody');
         tbody.innerHTML = '';
-        
-        let reqDict = {};
-        CORE_SKILLS.forEach(s => reqDict[s] = 3);
-        SUB_SKILLS.forEach(s => reqDict[s] = 0); 
-        HOLO_SKILLS.forEach(s => reqDict[s] = 0);
-
-        if (result.scheme === 'A') {
-            let sub1 = result.counts["Damage"] || 0;
-            let sub2 = result.counts["Boss Damage"] || 0;
-            if (sub1 >= sub2) reqDict["Damage"] = 3; else reqDict["Boss Damage"] = 3;
-        } else if (result.scheme === 'B') {
-            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0));
-            for(let i=0; i<3; i++) reqDict[sortedHolo[i]] = 1;
-        } else if (result.scheme === 'C') {
-            reqDict["Critical Damage"] = 1;
-            HOLO_SKILLS.forEach(s => reqDict[s] = 1);
-            SUB_SKILLS.forEach(s => reqDict[s] = 0);
-        }
 
         allSkills.forEach(skill => {
             let target = reqDict[skill] || 0;
             let current = result.counts[skill] || 0;
-            
             if (target === 0 && current === 0) return; 
 
-            let statusText = '';
-            let statusClass = '';
+            let statusText = ''; let statusClass = '';
+            if (current === target) { statusText = '完美'; statusClass = 'missing-zero'; }
+            else if (current < target) { statusText = `缺 ${target - current}`; statusClass = 'missing-pos'; }
+            else { statusText = `超 ${current - target}`; statusClass = 'missing-over'; }
 
-            if (current === target) {
-                statusText = '完美'; statusClass = 'missing-zero';
-            } else if (current < target) {
-                statusText = `缺 ${target - current}`; statusClass = 'missing-pos';
-            } else {
-                statusText = `超 ${current - target}`; statusClass = 'missing-over';
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${skill}</td>
-                <td>${target}</td>
-                <td>${current}</td>
-                <td class="${statusClass}">${statusText}</td>
-            `;
-            tbody.appendChild(tr);
+            tbody.innerHTML += `<tr><td>${skill}</td><td>${target}</td><td>${current}</td><td class="${statusClass}">${statusText}</td></tr>`;
         });
     }
 
-    function generateReplacements(result, scheme) {
+    function generateReplacements(result, scheme, reqDict) {
         let missingList = [];
-        if (scheme === 'A') {
-            CORE_SKILLS.forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
-            let sub1M = Math.max(0, 3 - (result.counts["Damage"]||0));
-            let sub2M = Math.max(0, 3 - (result.counts["Boss Damage"]||0));
-            if (sub1M < sub2M) { for(let i=0; i<sub1M; i++) missingList.push("Damage"); }
-            else { for(let i=0; i<sub2M; i++) missingList.push("Boss Damage"); }
-        } else if (scheme === 'B') {
-            CORE_SKILLS.forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
-            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0));
-            for(let i=0; i<3; i++) {
-                if((result.counts[sortedHolo[i]]||0) === 0) {
-                    missingList.push(sortedHolo[i]); 
-                }
-            }
-        } else {
-            ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => { for(let i=0; i<3-(result.counts[s]||0); i++) missingList.push(s); });
-            if((result.counts["Critical Damage"]||0) === 0) missingList.unshift("Critical Damage");
-            HOLO_SKILLS.forEach(s => { if((result.counts[s]||0) === 0) missingList.push(s); });
+        for (let skill in reqDict) {
+            let diff = reqDict[skill] - (result.counts[skill]||0);
+            if (diff > 0) for(let i=0; i<diff; i++) missingList.push(skill);
         }
 
-        if (missingList.length > 3) {
-             return [{ slotName: "提示", originIndex: "-", oldSkillsText: "-", neededSkills: [`当前缺口达到 ${missingList.length} 个，单件替换无法毕业，请继续刷装备`] }];
-        }
+        if (missingList.length > 3) return [{ slotName: "提示", originIndex: "-", oldSkillsText: "-", neededSkills: [`当前缺口达到 ${missingList.length} 个，单件替换无法毕业，请继续刷装备`] }];
 
-        let currentEquips = result.combo.map((eq, slotIdx) => ({
-            slotName: slotNames[slotIdx], skills: [...eq.skills], originIndex: eq.skills._originIndex
-        }));
-
+        let currentEquips = result.combo.map((eq, slotIdx) => ({ slotName: slotNames[slotIdx], skills: [...eq.skills], originIndex: eq.skills._originIndex }));
         let candidates = [];
+        
         currentEquips.forEach((equip, index) => {
             let lostSkills = [];
             let tempCounts = {...result.counts}; 
             
-            equip.skills.forEach(s => {
-                if (s && tempCounts[s] !== undefined && tempCounts[s] > 0) tempCounts[s]--;
-            });
-            
-            let reqDict = {};
-            if(scheme==='A'){ CORE_SKILLS.forEach(s=>reqDict[s]=3); if(result.counts["Damage"]>=result.counts["Boss Damage"]) reqDict["Damage"]=3; else reqDict["Boss Damage"]=3; }
-            if(scheme==='B'){ CORE_SKILLS.forEach(s=>reqDict[s]=3); let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (result.counts[b]||0) - (result.counts[a]||0)); for(let i=0;i<3;i++) reqDict[sortedHolo[i]]=1; }
-            if(scheme==='C'){ ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s=>reqDict[s]=3); reqDict["Critical Damage"]=1; HOLO_SKILLS.forEach(s=>reqDict[s]=1); }
-
-            equip.skills.forEach(s => {
-                if (s && tempCounts[s] < (reqDict[s]||0)) lostSkills.push(s);
-            });
+            equip.skills.forEach(s => { if (s && tempCounts[s] !== undefined && tempCounts[s] > 0) tempCounts[s]--; });
+            equip.skills.forEach(s => { if (s && tempCounts[s] < (reqDict[s]||0)) lostSkills.push(s); });
 
             let neededSkillsSet = new Set(missingList);
             lostSkills.forEach(s => neededSkillsSet.add(s));
             let neededSkills = Array.from(neededSkillsSet);
             
             if (neededSkills.length <= 3) {
-                candidates.push({
-                    slotName: equip.slotName, originIndex: equip.originIndex, neededSkills: neededSkills,
-                    oldSkillsText: equip.skills.filter(s => s).join(', ') || '无有效词条', lostCount: lostSkills.length 
-                });
+                candidates.push({ slotName: equip.slotName, originIndex: equip.originIndex, neededSkills: neededSkills, oldSkillsText: equip.skills.filter(s => s).join(', ') || '无有效词条', lostCount: lostSkills.length });
             }
         });
 
@@ -1065,9 +1552,7 @@
         let uniqueCandidates = [];
         let seenSlots = new Set();
         for (let cand of candidates) {
-            if (!seenSlots.has(cand.slotName)) {
-                seenSlots.add(cand.slotName); uniqueCandidates.push(cand);
-            }
+            if (!seenSlots.has(cand.slotName)) { seenSlots.add(cand.slotName); uniqueCandidates.push(cand); }
             if (uniqueCandidates.length >= 3) break;
         }
 
