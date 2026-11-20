@@ -424,7 +424,6 @@
         .scheme-card-desc { font-size: 12px; color: #aaa; line-height: 1.4; padding-left: 24px; }
         .scheme-card.active .scheme-card-desc { color: #ccc; }
 
-        /* 删除自定义方案按钮 */
         .delete-custom-btn {
             position: absolute;
             top: 8px;
@@ -453,6 +452,21 @@
         .goal-group.core .goal-group-label { border-left-color: #4a7ba6; color: #8ab4f8; }
         .goal-group.subcore .goal-group-label { border-left-color: #8a5a99; color: #d8b4e2; }
         .goal-group.holo .goal-group-label { border-left-color: #a6643e; color: #fca86b; }
+        
+        /* 方案B专属组合样式 */
+        .goal-group.scheme-b-combos .goal-group-label { border-left-color: #ffb300; color: #ffd54f; }
+        .combo-tag {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255, 179, 0, 0.1);
+            border: 1px solid #ffb300;
+            color: #ffd54f;
+            white-space: nowrap;
+            display: inline-block;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
 
         .goal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
         .goal-tag { font-size: 12px; padding: 4px 8px; border-radius: 4px; background: #333; border: 1px solid #555; white-space: nowrap; }
@@ -562,7 +576,7 @@
                 <div class="scheme-card-header">
                     <input type="checkbox" id="chk-B" onchange="updateActiveSchemes()"> ✨ 方案B：全息路线
                 </div>
-                <div class="scheme-card-desc">5个核心词条 x3 + 任意3种不同全息词条 x1</div>
+                <div class="scheme-card-desc">5个核心词条 x3 + 指定的5种全息组合之一 (详见看板)</div>
             </label>
 
             <label class="scheme-card" id="card-C">
@@ -597,6 +611,11 @@
             <div class="goal-group holo">
                 <div class="goal-group-label">✨ 全息词条</div>
                 <div class="goal-tags" id="goalHolo"></div>
+            </div>
+            <!-- 新增：方案B专属全息组合展示 -->
+            <div class="goal-group scheme-b-combos" id="schemeBCombosBox" style="display:none;">
+                <div class="goal-group-label">✨ 方案B专属：以下 5 种全息组合达成其一即可</div>
+                <div class="goal-tags" id="goalSchemeBCombos"></div>
             </div>
         </div>
 
@@ -672,6 +691,24 @@
     const HOLO_SKILLS = ["Magician Attack", "Pirate Attack", "Thief Attack", "Warrior Attack", "Bowman Attack"];
     const allSkills = [...CORE_SKILLS, ...SUB_SKILLS, ...HOLO_SKILLS];
     
+    // 方案B的全息词条组合
+    const SCHEME_B_HOLO_COMBOS = [
+        ["Warrior Attack", "Magician Attack", "Bowman Attack"],
+        ["Thief Attack", "Magician Attack", "Bowman Attack"],
+        ["Warrior Attack", "Pirate Attack", "Bowman Attack"],
+        ["Warrior Attack", "Thief Attack", "Pirate Attack"],
+        ["Thief Attack", "Magician Attack", "Pirate Attack"]
+    ];
+    
+    // 中文名映射，用于在UI上展示方案B的具体组合
+    const SKILL_CN_NAMES = {
+        "Warrior Attack": "战士",
+        "Magician Attack": "法师",
+        "Bowman Attack": "弓手",
+        "Thief Attack": "飞侠",
+        "Pirate Attack": "海盗"
+    };
+    
     const W_CORE = 100;
     const W_SUB = 30;
     const W_HOLO = 10;
@@ -686,7 +723,7 @@
     let currentQuickSlot = "帽子";
     let quickEntryData = ["", "", ""];
     
-    // 当前激活的槽位 { type: 'quick'|'existing', posIndex, slot, equipIndex }
+    // 当前激活的槽位
     let activeSlotInfo = null; 
 
     function init() {
@@ -705,6 +742,33 @@
         renderInventory();
     }
 
+    function renderGoalBoard() {
+        const coreBox = document.getElementById('goalCore');
+        const subBox = document.getElementById('goalSub');
+        const holoBox = document.getElementById('goalHolo');
+        coreBox.innerHTML = ''; subBox.innerHTML = ''; holoBox.innerHTML = '';
+        
+        CORE_SKILLS.forEach(skill => coreBox.innerHTML += `<span class="goal-tag tag-core">${skill}</span>`);
+        SUB_SKILLS.forEach(skill => subBox.innerHTML += `<span class="goal-tag tag-sub">${skill}</span>`);
+        HOLO_SKILLS.forEach(skill => holoBox.innerHTML += `<span class="goal-tag tag-holo">${skill}</span>`);
+
+        // 渲染方案B专属组合
+        const combosBox = document.getElementById('goalSchemeBCombos');
+        combosBox.innerHTML = '';
+        SCHEME_B_HOLO_COMBOS.forEach(combo => {
+            const comboText = combo.map(s => SKILL_CN_NAMES[s]).join(' + ');
+            combosBox.innerHTML += `<span class="combo-tag">${comboText}</span>`;
+        });
+
+        // 根据是否勾选方案B来决定是否显示这个区域
+        updateSchemeBVisibility();
+    }
+
+    function updateSchemeBVisibility() {
+        const isChecked = document.getElementById('chk-B').checked;
+        document.getElementById('schemeBCombosBox').style.display = isChecked ? 'block' : 'none';
+    }
+
     // 渲染部位按钮
     function renderQuickSlotButtons() {
         const container = document.getElementById('quick-slot-buttons');
@@ -721,14 +785,13 @@
         });
     }
 
-    // 渲染标签池（包含去重禁用逻辑）
+    // 渲染标签池
     function renderTagPool() {
         const coreBox = document.getElementById('pool-core');
         const subBox = document.getElementById('pool-sub');
         const holoBox = document.getElementById('pool-holo');
         coreBox.innerHTML = ''; subBox.innerHTML = ''; holoBox.innerHTML = '';
 
-        // 获取当前暂存区已经有的词条用于去重
         let disabledSkills = [];
         if (activeSlotInfo && activeSlotInfo.type === 'quick') {
             disabledSkills = quickEntryData.filter(s => s !== "");
@@ -802,7 +865,6 @@
         renderInventory();
     }
 
-    // 快速添加整件装备
     function addQuickEquip() {
         const targetSlot = currentQuickSlot;
         const hasSkill = quickEntryData.some(s => s !== "");
@@ -819,16 +881,12 @@
 
         let newEquip = [...quickEntryData];
         
-        // 🌟 修复添加顺序：追加到末尾
         if (inventoryData[targetSlot].length === 1 && inventoryData[targetSlot][0].every(s => s === "")) {
-            // 如果只有默认的空装备，直接覆盖
             inventoryData[targetSlot][0] = newEquip;
         } else {
-            // 否则追加到末尾
             inventoryData[targetSlot].push(newEquip);
         }
         
-        // 清空暂存区
         quickEntryData = ["", "", ""];
         activeSlotInfo = { type: 'quick', posIndex: 0 };
         
@@ -843,7 +901,6 @@
         trashableEquips.clear();
     }
 
-    // 点击标签填入
     function fillActiveSlot(skill) {
         if (!activeSlotInfo) {
             let next = quickEntryData.findIndex(s => s === "");
@@ -950,16 +1007,6 @@
         renderTagPool();
     }
 
-    function renderGoalBoard() {
-        const coreBox = document.getElementById('goalCore');
-        const subBox = document.getElementById('goalSub');
-        const holoBox = document.getElementById('goalHolo');
-        coreBox.innerHTML = ''; subBox.innerHTML = ''; holoBox.innerHTML = '';
-        CORE_SKILLS.forEach(skill => coreBox.innerHTML += `<span class="goal-tag tag-core">${skill}</span>`);
-        SUB_SKILLS.forEach(skill => subBox.innerHTML += `<span class="goal-tag tag-sub">${skill}</span>`);
-        HOLO_SKILLS.forEach(skill => holoBox.innerHTML += `<span class="goal-tag tag-holo">${skill}</span>`);
-    }
-
     function initSchemeCheckboxes() {
         ['A', 'B', 'C', 'Custom'].forEach(s => {
             const chk = document.getElementById(`chk-${s}`);
@@ -975,6 +1022,7 @@
             updateCardStyle(document.getElementById('card-Custom'), document.getElementById('chk-Custom').checked);
             updateCustomDesc();
         }
+        updateSchemeBVisibility();
     }
 
     function updateCardStyle(card, isChecked) {
@@ -982,7 +1030,6 @@
         else card.classList.remove('active');
     }
 
-    // 🌟 修改：用分类汇总展示自定义方案
     function updateCustomDesc() {
         if (Object.keys(customSchemeData).length === 0) {
             document.getElementById('custom-desc-text').textContent = '点击下方按钮配置';
@@ -1004,7 +1051,6 @@
         document.getElementById('custom-desc-text').textContent = `包含 ` + desc.join(', ');
     }
 
-    // 🌟 新增：删除自定义方案
     function deleteCustomScheme(event) {
         if (event) {
             event.preventDefault();
@@ -1050,6 +1096,8 @@
 
         activeSchemes = selected;
         localStorage.setItem('bis_active_schemes', JSON.stringify(activeSchemes));
+        updateSchemeBVisibility(); // 更新看板上的组合展示
+        
         if (document.getElementById('resultArea').style.display !== 'none') calculate(true);
     }
 
@@ -1339,22 +1387,26 @@
         }
     }
 
+    function calcSchemeB(counts) {
+        let missCore = 0;
+        CORE_SKILLS.forEach(s => missCore += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
+        
+        let minHoloMiss = Infinity;
+        for (let combo of SCHEME_B_HOLO_COMBOS) {
+            let comboMiss = 0;
+            combo.forEach(s => comboMiss += Math.max(0, 1 - (counts[s]||0)) * W_HOLO);
+            if (comboMiss < minHoloMiss) minHoloMiss = comboMiss;
+        }
+        
+        return missCore + minHoloMiss;
+    }
+
     function calcSchemeA(counts) {
         let miss = 0;
         CORE_SKILLS.forEach(s => miss += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
         let subMiss1 = Math.max(0, 3 - (counts["Damage"]||0));
         let subMiss2 = Math.max(0, 3 - (counts["Boss Damage"]||0));
         miss += Math.min(subMiss1, subMiss2) * W_SUB; 
-        return miss;
-    }
-
-    function calcSchemeB(counts) {
-        let miss = 0;
-        CORE_SKILLS.forEach(s => miss += Math.max(0, 3 - (counts[s]||0)) * W_CORE);
-        let holoCounts = HOLO_SKILLS.map(h => counts[h]||0).sort((a,b) => b-a); 
-        let holoMiss = 0;
-        for(let i=0; i<3; i++) if(holoCounts[i] === 0) holoMiss++; 
-        miss += holoMiss * W_HOLO;
         return miss;
     }
 
@@ -1401,8 +1453,14 @@
 
     function runCoreCalc() {
         let bestCombo = null;
-        let minOverallMissing = Infinity;
-        let optimalEquipsSet = new Set(); 
+        let globalMinScore = Infinity;
+        let optimalEquipsSet = {}; 
+        let minMiss = {}; 
+
+        activeSchemes.forEach(s => {
+            optimalEquipsSet[s] = new Set();
+            minMiss[s] = Infinity;
+        });
 
         function dfs(slotIndex, currentCombo) {
             if (slotIndex === slotNames.length) {
@@ -1414,20 +1472,31 @@
                     });
                 });
 
+                let rawScores = {};
+                if (activeSchemes.includes('A')) rawScores['A'] = calcSchemeA(counts);
+                if (activeSchemes.includes('B')) rawScores['B'] = calcSchemeB(counts);
+                if (activeSchemes.includes('C')) rawScores['C'] = calcSchemeC(counts);
+                if (activeSchemes.includes('Custom')) rawScores['Custom'] = calcSchemeCustom(counts);
+
+                for(let s in rawScores) {
+                    if (rawScores[s] < minMiss[s]) {
+                        minMiss[s] = rawScores[s];
+                        optimalEquipsSet[s].clear();
+                        currentCombo.forEach(eq => optimalEquipsSet[s].add(`${eq._slotName}-${eq._originIndex}`));
+                    } else if (rawScores[s] === minMiss[s]) {
+                        currentCombo.forEach(eq => optimalEquipsSet[s].add(`${eq._slotName}-${eq._originIndex}`));
+                    }
+                }
+
                 let evalResult = evaluateSchemes(counts);
-                
-                if (evalResult.bestScore < minOverallMissing) {
-                    minOverallMissing = evalResult.bestScore;
+                if (evalResult.bestScore < globalMinScore) {
+                    globalMinScore = evalResult.bestScore;
                     bestCombo = {
                         combo: currentCombo.map((eq, i) => ({ skills: eq, index: i })),
                         counts: {...counts},
                         scheme: evalResult.bestScheme,
                         schemeScore: evalResult.bestScore
                     };
-                    optimalEquipsSet.clear();
-                    currentCombo.forEach(eq => optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`));
-                } else if (evalResult.bestScore === minOverallMissing) {
-                    currentCombo.forEach(eq => optimalEquipsSet.add(`${eq._slotName}-${eq._originIndex}`));
                 }
                 return;
             }
@@ -1448,12 +1517,17 @@
 
         dfs(0, []);
 
+        let unionOptimalSet = new Set();
+        for(let s in optimalEquipsSet) {
+            optimalEquipsSet[s].forEach(key => unionOptimalSet.add(key));
+        }
+
         trashableEquips.clear();
         slotNames.forEach(slot => {
             if (inventoryData[slot].length > 1 && lockedEquips[slot] === undefined) {
                 inventoryData[slot].forEach((equip, idx) => {
                     const key = `${slot}-${idx + 1}`;
-                    if (!optimalEquipsSet.has(key)) trashableEquips.add(key);
+                    if (!unionOptimalSet.has(key)) trashableEquips.add(key);
                 });
             }
         });
@@ -1465,6 +1539,7 @@
     function getReqDict(scheme, counts) {
         let reqDict = {};
         allSkills.forEach(s => reqDict[s] = 0); 
+        
         if (scheme === 'A') {
             CORE_SKILLS.forEach(s => reqDict[s] = 3);
             let sub1 = counts["Damage"] || 0;
@@ -1472,8 +1547,17 @@
             if (sub1 >= sub2) reqDict["Damage"] = 3; else reqDict["Boss Damage"] = 3;
         } else if (scheme === 'B') {
             CORE_SKILLS.forEach(s => reqDict[s] = 3);
-            let sortedHolo = [...HOLO_SKILLS].sort((a,b) => (counts[b]||0) - (counts[a]||0));
-            for(let i=0; i<3; i++) reqDict[sortedHolo[i]] = 1;
+            let bestCombo = null;
+            let minMiss = Infinity;
+            for (let combo of SCHEME_B_HOLO_COMBOS) {
+                let miss = 0;
+                combo.forEach(s => miss += Math.max(0, 1 - (counts[s]||0)));
+                if (miss < minMiss) {
+                    minMiss = miss;
+                    bestCombo = combo;
+                }
+            }
+            bestCombo.forEach(s => reqDict[s] = 1);
         } else if (scheme === 'C') {
             ["Dimensional Leap", "White Hole", "Registry", "Attack Power & Magic ATT"].forEach(s => reqDict[s] = 3);
             reqDict["Critical Damage"] = 1;
